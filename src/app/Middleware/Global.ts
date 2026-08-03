@@ -1,5 +1,5 @@
 import { createMiddleware } from 'hono/factory'
-import type { AppEnv } from '@/app/Models/User'
+import type { AppEnv } from '@/app/Env'
 
 /**
  * Global middleware, registered once in `src/index.ts`.

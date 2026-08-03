@@ -22,3 +22,12 @@ export const showUserRequest = zValidator(
     id: z.coerce.number().int().positive(),
   })
 )
+
+export const loginUserRequest = zValidator(
+  'json',
+  z.object({
+    email: z.string().email(),
+    password: z.string().min(1),
+  })
+)
+

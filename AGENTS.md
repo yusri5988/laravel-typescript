@@ -170,13 +170,33 @@ Drizzle ORM
 Database
 ```
 
+### Environment Definitions (`AppEnv`)
+
+Environment types (`Bindings`, `Variables`, `AppEnv`) must be defined in:
+
+```text
+src/app/Env.ts
+```
+
+Do not define `AppEnv` or context bindings inside domain models (e.g. `Models/User.ts`).
+
+### Modular Routes
+
+Routes should be broken down into modular router files under `src/routes/` (e.g., `auth.ts`, `users.ts`) and mounted into the main `api.ts` router using `api.route()`.
+
+### Dependency Management
+
+To avoid repetitive per-request instantiation boilerplate (e.g. `new UserService(new UserRepository(dbFrom(c.env)))`), use service provider helper functions defined in `src/app/Services/AppServiceProvider.ts` (e.g. `userServiceFrom(c.env)`).
+
 ### General Development Rules
 
 * Keep controllers thin.
 * Keep business logic inside services.
 * Keep database queries inside repositories or approved Drizzle modules.
-* Use request schemas for input validation.
-* Reuse existing utilities and helpers.
+* All HTTP validation schemas (including login) must live in `src/app/Requests`.
+* Environment types (`AppEnv`) must live in `src/app/Env.ts`.
+* Break routes into modular files by resource under `src/routes`.
+* Reuse existing utilities, helpers, and service provider factories to avoid repeated dependency instantiation.
 * Avoid duplicate logic.
 * Avoid unnecessary abstraction.
 * Follow the existing module structure.

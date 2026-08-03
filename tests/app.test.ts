@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import app from '@/app/app'
-import type { AppEnv } from '@/app/Models/User'
+import type { AppEnv } from '@/app/Env'
 
 /**
  * Minimal in-memory D1 mock — enough for SELECT queries.

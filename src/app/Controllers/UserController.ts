@@ -1,11 +1,7 @@
-import { zValidator } from '@hono/zod-validator'
-import { z } from 'zod'
-import { factory, dbFrom } from '@/app/Services/AppServiceProvider'
-import { UserService } from '@/app/Services/UserService'
-import { UserRepository } from '@/app/Repositories/UserRepository'
+import { factory, userServiceFrom } from '@/app/Services/AppServiceProvider'
 import { issueToken } from '@/app/Middleware/Auth'
 import { withData } from '@/helpers/response'
-import { storeUserRequest, showUserRequest } from '@/app/Requests/UserRequest'
+import { storeUserRequest, showUserRequest, loginUserRequest } from '@/app/Requests/UserRequest'
 
 /**
  * Controllers — thin HTTP boundary.
@@ -15,20 +11,20 @@ import { storeUserRequest, showUserRequest } from '@/app/Requests/UserRequest'
  */
 const store = factory.createHandlers(storeUserRequest, async (c) => {
   const body = c.req.valid('json')
-  const userService = new UserService(new UserRepository(dbFrom(c.env)))
+  const userService = userServiceFrom(c.env)
   const user = await userService.create(body)
   return withData(user, 201)
 })
 
 const show = factory.createHandlers(showUserRequest, async (c) => {
   const { id } = c.req.valid('param')
-  const userService = new UserService(new UserRepository(dbFrom(c.env)))
+  const userService = userServiceFrom(c.env)
   const user = await userService.find(id)
   return withData(user)
 })
 
 const index = factory.createHandlers(async (c) => {
-  const userService = new UserService(new UserRepository(dbFrom(c.env)))
+  const userService = userServiceFrom(c.env)
   const users = await userService.all()
   return withData(users)
 })
@@ -41,22 +37,13 @@ const me = factory.createHandlers(async (c) => {
   return withData(user)
 })
 
-const login = factory.createHandlers(
-  zValidator(
-    'json',
-    z.object({
-      email: z.string().email(),
-      password: z.string().min(1),
-    })
-  ),
-  async (c) => {
-    const { email, password } = c.req.valid('json')
-    const userService = new UserService(new UserRepository(dbFrom(c.env)))
-    const user = await userService.authenticate(email, password)
-    const token = await issueToken(c, user)
-    return c.json({ token })
-  }
-)
+const login = factory.createHandlers(loginUserRequest, async (c) => {
+  const { email, password } = c.req.valid('json')
+  const userService = userServiceFrom(c.env)
+  const user = await userService.authenticate(email, password)
+  const token = await issueToken(c, user)
+  return c.json({ token })
+})
 
 export const UserController = {
   index,

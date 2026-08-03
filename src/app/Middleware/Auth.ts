@@ -1,7 +1,8 @@
 import { createMiddleware } from 'hono/factory'
 import { sign, verify } from 'hono/jwt'
 import type { Context } from 'hono'
-import type { AppEnv, UserResource } from '@/app/Models/User'
+import type { AppEnv } from '@/app/Env'
+import type { UserResource } from '@/app/Models/User'
 import { authConfig } from '@/config/app'
 
 /**

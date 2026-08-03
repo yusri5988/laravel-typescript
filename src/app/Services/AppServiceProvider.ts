@@ -1,7 +1,9 @@
 import { createFactory } from 'hono/factory'
 import { drizzle } from 'drizzle-orm/d1'
 import * as schema from '@/database/schema'
-import type { AppEnv } from '@/app/Models/User'
+import type { AppEnv } from '@/app/Env'
+import { UserRepository } from '@/app/Repositories/UserRepository'
+import { UserService } from '@/app/Services/UserService'
 
 /**
  * Hono factory typed with our env — used across the app layer so
@@ -15,4 +17,11 @@ export const factory = createFactory<AppEnv>()
  */
 export function dbFrom(env: AppEnv['Bindings']) {
   return drizzle(env.DB, { schema })
+}
+
+/**
+ * Helper to resolve UserService per-request without repeated instantiation boilerplates.
+ */
+export function userServiceFrom(env: AppEnv['Bindings']) {
+  return new UserService(new UserRepository(dbFrom(env)))
 }

@@ -33,6 +33,7 @@ src/
 │   ├── Repositories/     # Drizzle/D1 queries
 │   ├── Requests/         # Zod validation schemas
 │   ├── Services/         # business logic
+│   ├── Env.ts            # Hono environment types (Bindings & Variables)
 │   └── app.ts            # application bootstrap
 ├── config/               # application configuration
 ├── database/
@@ -40,7 +41,7 @@ src/
 │   ├── schema/           # Drizzle schema source of truth
 │   └── seeders/           # local/demo seed data
 ├── helpers/              # response helpers
-├── routes/               # endpoint definitions only
+├── routes/               # modular endpoint definitions (api, web, auth, users)
 └── index.ts              # Worker entrypoint
 tests/
 AGENTS.md                # architecture rules for contributors and coding agents

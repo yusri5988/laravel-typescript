@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import type { AppEnv } from '@/app/Models/User'
+import type { AppEnv } from '@/app/Env'
 
 /**
  * Web routes — equivalent to Laravel's routes/web.php.
