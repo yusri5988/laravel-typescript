@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.wrangler/
+wrangler-local-state/
+.dev.vars
+*.log
+.env
+.env.*
+!.env.example
+.vitest/
+coverage/
