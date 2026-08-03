@@ -11,10 +11,26 @@ export const users = sqliteTable('users', {
   name: text('name').notNull(),
   email: text('email').notNull().unique(),
   passwordHash: text('password_hash').notNull(),
+  emailVerifiedAt: integer('email_verified_at', { mode: 'timestamp' }),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
   updatedAt: integer('updated_at', { mode: 'timestamp' })
     .notNull()
     .$defaultFn(() => new Date()),
+})
+
+export const passwordResetTokens = sqliteTable('password_reset_tokens', {
+  email: text('email').primaryKey(),
+  tokenHash: text('token_hash').notNull(),
+  expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+})
+
+export const emailVerificationTokens = sqliteTable('email_verification_tokens', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: integer('user_id').notNull(),
+  tokenHash: text('token_hash').notNull().unique(),
+  expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
 })
 
 export type UserRow = typeof users.$inferSelect

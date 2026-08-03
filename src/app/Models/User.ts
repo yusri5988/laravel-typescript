@@ -10,6 +10,7 @@ export type User = {
   email: string
   /** Raw `password_hash` column; never expose in API responses. */
   passwordHash: string
+  emailVerifiedAt?: Date | null
   createdAt: Date
   updatedAt: Date
 }
@@ -23,4 +24,5 @@ export type UserResource = {
   name: string
   email: string
   createdAt: Date
+  emailVerifiedAt?: Date | null
 }

@@ -31,4 +31,9 @@ export class UserRepository {
     const [row] = await this.db.insert(users).values(data).returning()
     return row as User
   }
+
+  async update(id: number, data: { name?: string; email?: string; passwordHash?: string }): Promise<User> {
+    const [row] = await this.db.update(users).set({ ...data, updatedAt: new Date() }).where(eq(users.id, id)).returning()
+    return row as User
+  }
 }

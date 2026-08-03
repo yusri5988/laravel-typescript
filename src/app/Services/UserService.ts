@@ -18,6 +18,7 @@ export class UserService {
       name: user.name,
       email: user.email,
       createdAt: user.createdAt,
+      emailVerifiedAt: user.emailVerifiedAt,
     }
   }
 
@@ -56,8 +57,26 @@ export class UserService {
     return this.toResource(user)
   }
 
+  async updateProfile(id: number, data: { name?: string; email?: string }): Promise<UserResource> {
+    const user = await this.userRepository.findById(id)
+    if (!user) throw new NotFoundException('User')
+    if (data.email && data.email !== user.email && (await this.userRepository.findByEmail(data.email))) {
+      throw new ValidationException({ email: ['Email is already taken.'] })
+    }
+    return this.toResource(await this.userRepository.update(id, data))
+  }
+
+  async updatePassword(id: number, currentPassword: string, password: string): Promise<void> {
+    const user = await this.userRepository.findById(id)
+    if (!user) throw new NotFoundException('User')
+    if (!(await this.verifyPassword(currentPassword, user.passwordHash))) {
+      throw new ValidationException({ currentPassword: ['The current password is incorrect.'] })
+    }
+    await this.userRepository.update(id, { passwordHash: await this.hashPassword(password) })
+  }
+
   /** PBKDF2 password hashing using Workers Web Crypto. */
-  private async hashPassword(password: string): Promise<string> {
+  async hashPassword(password: string): Promise<string> {
     const iterations = 120_000
     const salt = crypto.getRandomValues(new Uint8Array(16))
     const key = await crypto.subtle.importKey(
@@ -76,7 +95,7 @@ export class UserService {
     return `pbkdf2$${iterations}$${this.toBase64Url(salt)}$${this.toBase64Url(new Uint8Array(bits))}`
   }
 
-  private async verifyPassword(password: string, encoded: string): Promise<boolean> {
+  async verifyPassword(password: string, encoded: string): Promise<boolean> {
     const [algorithm, iterationValue, saltValue, hashValue] = encoded.split('$')
     if (algorithm !== 'pbkdf2' || !iterationValue || !saltValue || !hashValue) return false
 

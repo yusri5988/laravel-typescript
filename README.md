@@ -16,6 +16,7 @@ Route → Request Schema → Controller → Service → Repository → Drizzle �
 - Drizzle schema and committed D1 migrations
 - PBKDF2 password hashing through Workers Web Crypto
 - JWT authentication using a Cloudflare secret
+- Breeze-inspired authentication endpoints for registration, login, logout, profile, and password changes
 - Zod request validation
 - Configurable CORS origin
 - Workers Logs and Traces configuration
@@ -108,7 +109,11 @@ The sample API includes:
 
 ```text
 POST /api/auth/login
+POST /api/auth/register
+POST /api/auth/logout
 GET  /api/users/me
+PATCH /api/users/profile
+PATCH /api/users/password
 ```
 
 Login expects an email and password. Passwords are stored using PBKDF2 with a random per-user salt. JWT signing requires `JWT_SECRET` from `.dev.vars` locally or `wrangler secret put JWT_SECRET` remotely.
@@ -121,6 +126,11 @@ bob@example.com   / password123
 ```
 
 Replace or remove this demo module when starting a real project.
+
+### Breeze-inspired API flow
+
+The authentication module follows the same published-code idea as Laravel Breeze:
+routes are modular, request validation is separated into `app/Requests`, HTTP handling stays in controllers, business rules stay in services, and D1 queries stay in repositories. Password reset and email verification token tables are included in the schema; an email provider must be connected before those tokens can be delivered to users.
 
 ## Tests and checks
 

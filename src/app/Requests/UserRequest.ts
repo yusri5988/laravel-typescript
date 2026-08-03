@@ -31,3 +31,18 @@ export const loginUserRequest = zValidator(
   })
 )
 
+export const updateProfileRequest = zValidator('json', z.object({
+  name: z.string().min(1).optional(),
+  email: z.string().email().optional(),
+}).refine((value) => value.name !== undefined || value.email !== undefined, {
+  message: 'At least one profile field is required.',
+}))
+
+export const updatePasswordRequest = zValidator('json', z.object({
+  currentPassword: z.string().min(1),
+  password: z.string().min(8),
+  passwordConfirmation: z.string().min(8),
+}).refine((value) => value.password === value.passwordConfirmation, {
+  path: ['passwordConfirmation'],
+  message: 'The password confirmation does not match.',
+}))

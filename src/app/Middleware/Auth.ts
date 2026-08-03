@@ -46,6 +46,7 @@ export const auth = createMiddleware<AppEnv>(async (c, next) => {
       name: String(payload.name ?? ''),
       email: String(payload.email ?? ''),
       createdAt: new Date(0),
+      emailVerifiedAt: null,
     }
     c.set('user', user)
     await next()

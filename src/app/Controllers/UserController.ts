@@ -1,7 +1,7 @@
 import { factory, userServiceFrom } from '@/app/Services/AppServiceProvider'
 import { issueToken } from '@/app/Middleware/Auth'
 import { withData } from '@/helpers/response'
-import { storeUserRequest, showUserRequest, loginUserRequest } from '@/app/Requests/UserRequest'
+import { storeUserRequest, showUserRequest, loginUserRequest, updateProfileRequest, updatePasswordRequest } from '@/app/Requests/UserRequest'
 
 /**
  * Controllers — thin HTTP boundary.
@@ -45,10 +45,33 @@ const login = factory.createHandlers(loginUserRequest, async (c) => {
   return c.json({ token })
 })
 
+const register = store
+
+const logout = factory.createHandlers(async (c) => c.json({ message: 'Logged out.' }))
+
+const profileUpdate = factory.createHandlers(updateProfileRequest, async (c) => {
+  const user = c.get('user')
+  if (!user) return c.json({ message: 'Unauthenticated.' }, 401)
+  const updated = await userServiceFrom(c.env).updateProfile(user.id, c.req.valid('json'))
+  return withData(updated)
+})
+
+const passwordUpdate = factory.createHandlers(updatePasswordRequest, async (c) => {
+  const user = c.get('user')
+  if (!user) return c.json({ message: 'Unauthenticated.' }, 401)
+  const body = c.req.valid('json')
+  await userServiceFrom(c.env).updatePassword(user.id, body.currentPassword, body.password)
+  return c.json({ message: 'Password updated.' })
+})
+
 export const UserController = {
   index,
   show,
   store,
   me,
   login,
+  register,
+  logout,
+  profileUpdate,
+  passwordUpdate,
 }
