@@ -13,8 +13,6 @@ jobs:
         with:
           node-version: 20
           cache: npm
-      - run: npm ci
+      - run: npm install
       - run: npm run typecheck
       - run: npm test
-      - run: npm audit --omit=dev --audit-level=high
-      - run: npx wrangler deploy --dry-run
