@@ -15,6 +15,13 @@
       "when": 1785770783032,
       "tag": "0001_familiar_loki",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1786163548064,
+      "tag": "0002_aspiring_otto_octavius",
+      "breakpoints": true
     }
   ]
 }

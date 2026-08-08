@@ -1,7 +1,8 @@
-import { UserRepository } from '@/app/Repositories/UserRepository'
+import type { UserRepositoryContract } from '@/app/Repositories/UserRepository'
 import { ValidationException } from '@/app/Exceptions/ValidationException'
 import { NotFoundException } from '@/app/Exceptions/NotFoundException'
 import { AuthenticationException } from '@/app/Exceptions/AuthenticationException'
+import { DuplicateUserEmailError } from '@/app/Exceptions/DuplicateUserEmailError'
 import type { User, UserResource } from '@/app/Models/User'
 
 /**
@@ -9,7 +10,7 @@ import type { User, UserResource } from '@/app/Models/User'
  * they parse/validate input, call a Service, and format the response.
  */
 export class UserService {
-  constructor(private userRepository: UserRepository) {}
+  constructor(private userRepository: UserRepositoryContract) {}
 
   /** Map a User row to the safe API shape (never leaks passwordHash). */
   toResource(user: User): UserResource {
@@ -17,14 +18,21 @@ export class UserService {
       id: user.id,
       name: user.name,
       email: user.email,
-      createdAt: user.createdAt,
-      emailVerifiedAt: user.emailVerifiedAt,
+      role: user.role,
+      createdAt: user.createdAt.toISOString(),
+      emailVerifiedAt: user.emailVerifiedAt?.toISOString() ?? null,
     }
   }
 
-  async all(): Promise<UserResource[]> {
-    const rows = await this.userRepository.all()
-    return rows.map((row) => this.toResource(row))
+  async paginate(page: number, perPage: number): Promise<{
+    data: UserResource[]
+    meta: { total: number; page: number; perPage: number }
+  }> {
+    const result = await this.userRepository.paginate(page, perPage)
+    return {
+      data: result.rows.map((row) => this.toResource(row)),
+      meta: { total: result.total, page, perPage },
+    }
   }
 
   async find(id: number): Promise<UserResource> {
@@ -49,12 +57,19 @@ export class UserService {
     }
 
     const passwordHash = await this.hashPassword(data.password)
-    const user = await this.userRepository.create({
-      name: data.name,
-      email: data.email,
-      passwordHash,
-    })
-    return this.toResource(user)
+    try {
+      const user = await this.userRepository.create({
+        name: data.name,
+        email: data.email,
+        passwordHash,
+      })
+      return this.toResource(user)
+    } catch (error) {
+      if (error instanceof DuplicateUserEmailError) {
+        throw new ValidationException({ email: ['Email is already taken.'] })
+      }
+      throw error
+    }
   }
 
   async updateProfile(id: number, data: { name?: string; email?: string }): Promise<UserResource> {
@@ -63,16 +78,26 @@ export class UserService {
     if (data.email && data.email !== user.email && (await this.userRepository.findByEmail(data.email))) {
       throw new ValidationException({ email: ['Email is already taken.'] })
     }
-    return this.toResource(await this.userRepository.update(id, data))
+    let updated: User | undefined
+    try {
+      updated = await this.userRepository.update(id, data)
+    } catch (error) {
+      if (error instanceof DuplicateUserEmailError) {
+        throw new ValidationException({ email: ['Email is already taken.'] })
+      }
+      throw error
+    }
+    if (!updated) throw new NotFoundException('User')
+    return this.toResource(updated)
   }
 
-  async updatePassword(id: number, currentPassword: string, password: string): Promise<void> {
+  async preparePasswordChange(id: number, currentPassword: string, password: string): Promise<string> {
     const user = await this.userRepository.findById(id)
     if (!user) throw new NotFoundException('User')
     if (!(await this.verifyPassword(currentPassword, user.passwordHash))) {
       throw new ValidationException({ currentPassword: ['The current password is incorrect.'] })
     }
-    await this.userRepository.update(id, { passwordHash: await this.hashPassword(password) })
+    return this.hashPassword(password)
   }
 
   /** PBKDF2 password hashing using Workers Web Crypto. */

@@ -50,11 +50,10 @@ describe('web routes', () => {
 })
 
 describe('api routes', () => {
-  it('GET /api/users returns a list (empty db)', async () => {
+  it('protects the user collection from unauthenticated access', async () => {
     const res = await app.request('http://localhost/api/users', {}, env)
-    expect(res.status).toBe(200)
-    const body = await res.json()
-    expect(body).toMatchObject({ data: [] })
+    expect(res.status).toBe(401)
+    await expect(res.json()).resolves.toEqual({ message: 'Unauthenticated.' })
   })
 
   it('GET /api/users/me requires auth', async () => {
@@ -62,4 +61,21 @@ describe('api routes', () => {
     expect(res.status).toBe(401)
   })
 
+  it('returns the standard 422 validation response', async () => {
+    const res = await app.request('http://localhost/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: '', email: 'invalid', password: 'short' }),
+    }, env)
+
+    expect(res.status).toBe(422)
+    await expect(res.json()).resolves.toMatchObject({
+      message: 'The given data was invalid.',
+      errors: {
+        name: expect.any(Array),
+        email: expect.any(Array),
+        password: expect.any(Array),
+      },
+    })
+  })
 })

@@ -1,7 +1,6 @@
-import { factory, userServiceFrom } from '@/app/Services/AppServiceProvider'
-import { issueToken } from '@/app/Middleware/Auth'
-import { withData } from '@/helpers/response'
-import { storeUserRequest, showUserRequest, loginUserRequest, updateProfileRequest, updatePasswordRequest } from '@/app/Requests/UserRequest'
+import { authServiceFrom, factory, userServiceFrom } from '@/app/Services/AppServiceProvider'
+import { paginated, withData } from '@/helpers/response'
+import { listUsersRequest, storeUserRequest, showUserRequest, updateProfileRequest, updatePasswordRequest } from '@/app/Requests/UserRequest'
 
 /**
  * Controllers — thin HTTP boundary.
@@ -23,10 +22,10 @@ const show = factory.createHandlers(showUserRequest, async (c) => {
   return withData(user)
 })
 
-const index = factory.createHandlers(async (c) => {
-  const userService = userServiceFrom(c.env)
-  const users = await userService.all()
-  return withData(users)
+const index = factory.createHandlers(listUsersRequest, async (c) => {
+  const { page, perPage } = c.req.valid('query')
+  const result = await userServiceFrom(c.env).paginate(page, perPage)
+  return paginated(result.data, result.meta)
 })
 
 const me = factory.createHandlers(async (c) => {
@@ -36,18 +35,6 @@ const me = factory.createHandlers(async (c) => {
   }
   return withData(user)
 })
-
-const login = factory.createHandlers(loginUserRequest, async (c) => {
-  const { email, password } = c.req.valid('json')
-  const userService = userServiceFrom(c.env)
-  const user = await userService.authenticate(email, password)
-  const token = await issueToken(c, user)
-  return c.json({ token })
-})
-
-const register = store
-
-const logout = factory.createHandlers(async (c) => c.json({ message: 'Logged out.' }))
 
 const profileUpdate = factory.createHandlers(updateProfileRequest, async (c) => {
   const user = c.get('user')
@@ -60,8 +47,8 @@ const passwordUpdate = factory.createHandlers(updatePasswordRequest, async (c) =
   const user = c.get('user')
   if (!user) return c.json({ message: 'Unauthenticated.' }, 401)
   const body = c.req.valid('json')
-  await userServiceFrom(c.env).updatePassword(user.id, body.currentPassword, body.password)
-  return c.json({ message: 'Password updated.' })
+  await authServiceFrom(c.env).updatePassword(user.id, body.currentPassword, body.password)
+  return c.json({ message: 'Password updated. Please log in again.' })
 })
 
 export const UserController = {
@@ -69,9 +56,6 @@ export const UserController = {
   show,
   store,
   me,
-  login,
-  register,
-  logout,
   profileUpdate,
   passwordUpdate,
 }

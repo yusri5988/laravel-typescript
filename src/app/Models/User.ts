@@ -1,19 +1,8 @@
 
-/**
- * Model types — the shape of rows flowing through the app.
- * Unlike Eloquent, these are plain TypeScript types; the query layer
- * lives in Repositories.
- */
-export type User = {
-  id: number
-  name: string
-  email: string
-  /** Raw `password_hash` column; never expose in API responses. */
-  passwordHash: string
-  emailVerifiedAt?: Date | null
-  createdAt: Date
-  updatedAt: Date
-}
+import type { UserRow } from '@/database/schema'
+
+export type User = UserRow
+export type UserRole = User['role']
 
 /**
  * DTO — the shape of a User returned by the API.
@@ -23,6 +12,7 @@ export type UserResource = {
   id: number
   name: string
   email: string
-  createdAt: Date
-  emailVerifiedAt?: Date | null
+  role: UserRole
+  createdAt: string
+  emailVerifiedAt: string | null
 }

@@ -1,5 +1,5 @@
-import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
+import { requestValidator } from '@/app/Requests/RequestValidator'
 
 /**
  * Requests — Zod schemas mirroring Laravel Form Requests.
@@ -7,7 +7,7 @@ import { z } from 'zod'
  * so `c.req.valid('json')` is fully typed inside handlers.
  */
 
-export const storeUserRequest = zValidator(
+export const storeUserRequest = requestValidator(
   'json',
   z.object({
     name: z.string().min(1, 'Name is required.'),
@@ -16,14 +16,14 @@ export const storeUserRequest = zValidator(
   })
 )
 
-export const showUserRequest = zValidator(
+export const showUserRequest = requestValidator(
   'param',
   z.object({
     id: z.coerce.number().int().positive(),
   })
 )
 
-export const loginUserRequest = zValidator(
+export const loginUserRequest = requestValidator(
   'json',
   z.object({
     email: z.string().email(),
@@ -31,14 +31,14 @@ export const loginUserRequest = zValidator(
   })
 )
 
-export const updateProfileRequest = zValidator('json', z.object({
+export const updateProfileRequest = requestValidator('json', z.object({
   name: z.string().min(1).optional(),
   email: z.string().email().optional(),
 }).refine((value) => value.name !== undefined || value.email !== undefined, {
   message: 'At least one profile field is required.',
 }))
 
-export const updatePasswordRequest = zValidator('json', z.object({
+export const updatePasswordRequest = requestValidator('json', z.object({
   currentPassword: z.string().min(1),
   password: z.string().min(8),
   passwordConfirmation: z.string().min(8),
@@ -46,3 +46,11 @@ export const updatePasswordRequest = zValidator('json', z.object({
   path: ['passwordConfirmation'],
   message: 'The password confirmation does not match.',
 }))
+
+export const listUsersRequest = requestValidator(
+  'query',
+  z.object({
+    page: z.coerce.number().int().positive().default(1),
+    perPage: z.coerce.number().int().min(1).max(100).default(20),
+  })
+)

@@ -15,9 +15,11 @@ Route → Request Schema → Controller → Service → Repository → Drizzle �
 - TypeScript types generated from Wrangler configuration
 - Drizzle schema and committed D1 migrations
 - PBKDF2 password hashing through Workers Web Crypto
-- JWT authentication using a Cloudflare secret
+- JWT authentication with revocable D1-backed sessions
+- `admin`/`user` authorization and admin-only user management
 - Breeze-inspired authentication endpoints for registration, login, logout, profile, and password changes
-- Zod request validation
+- Standardized Zod `422` validation responses and JSON application errors
+- Deterministic pagination for collection endpoints
 - Configurable CORS origin
 - Workers Logs and Traces configuration
 - Unit tests and Worker-compatible test foundation
@@ -108,21 +110,24 @@ Use `npm run db:push` only for local prototyping. Commit generated migration fil
 The sample API includes:
 
 ```text
-POST /api/auth/login
-POST /api/auth/register
-POST /api/auth/logout
-GET  /api/users/me
-PATCH /api/users/profile
-PATCH /api/users/password
+POST  /api/auth/login       Public
+POST  /api/auth/register    Public; always creates a `user`
+POST  /api/auth/logout      Authenticated; revokes the current session
+GET   /api/users/me         Authenticated
+PATCH /api/users/profile    Authenticated
+PATCH /api/users/password   Authenticated; revokes every session
+GET   /api/users            Admin; paginated with `page` and `perPage`
+POST  /api/users            Admin
+GET   /api/users/:id        Admin
 ```
 
-Login expects an email and password. Passwords are stored using PBKDF2 with a random per-user salt. JWT signing requires `JWT_SECRET` from `.dev.vars` locally or `wrangler secret put JWT_SECRET` remotely.
+Login expects an email and password. Passwords are stored using PBKDF2 with a random per-user salt. A JWT contains only `sub`, `jti`, and `exp`; every authenticated request also validates the persisted `auth_sessions` row and reloads the current user from D1. JWT signing requires `JWT_SECRET` from `.dev.vars` locally or `wrangler secret put JWT_SECRET` remotely.
 
 The seeded local users use:
 
 ```text
-alice@example.com / password123
-bob@example.com   / password123
+alice@example.com / password123  (admin)
+bob@example.com   / password123  (user)
 ```
 
 Replace or remove this demo module when starting a real project.
@@ -131,6 +136,8 @@ Replace or remove this demo module when starting a real project.
 
 The authentication module follows the same published-code idea as Laravel Breeze:
 routes are modular, request validation is separated into `app/Requests`, HTTP handling stays in controllers, business rules stay in services, and D1 queries stay in repositories. Password reset and email verification token tables are included in the schema; an email provider must be connected before those tokens can be delivered to users.
+
+`AuthController` and `AuthService` own the authentication lifecycle. `AuthRepository` owns persisted sessions and the atomic password-change/session-revocation write. This keeps token logic out of middleware and user CRUD.
 
 ## Tests and checks
 
@@ -156,6 +163,10 @@ Follow the existing module pattern:
 9. Add unit and Worker-level tests.
 
 See [AGENTS.md](./AGENTS.md) for the mandatory architecture guidelines.
+
+## AI agent rules
+
+`AGENTS.md` is the canonical architecture and implementation SOP for Codex and human contributors. Antigravity uses the workspace rule at [`.agents/rules/hono-laravel-architecture.md`](./.agents/rules/hono-laravel-architecture.md), which points back to the same source of truth to avoid duplicated or drifting instructions.
 
 ## License
 

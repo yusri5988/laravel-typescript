@@ -3,6 +3,8 @@ import { drizzle } from 'drizzle-orm/d1'
 import * as schema from '@/database/schema'
 import type { AppEnv } from '@/app/Env'
 import { UserRepository } from '@/app/Repositories/UserRepository'
+import { AuthRepository } from '@/app/Repositories/AuthRepository'
+import { AuthService } from '@/app/Services/AuthService'
 import { UserService } from '@/app/Services/UserService'
 
 /**
@@ -24,4 +26,13 @@ export function dbFrom(env: AppEnv['Bindings']) {
  */
 export function userServiceFrom(env: AppEnv['Bindings']) {
   return new UserService(new UserRepository(dbFrom(env)))
+}
+
+export function authServiceFrom(env: AppEnv['Bindings']) {
+  const db = dbFrom(env)
+  return new AuthService(
+    new UserService(new UserRepository(db)),
+    new AuthRepository(db),
+    env.JWT_SECRET
+  )
 }

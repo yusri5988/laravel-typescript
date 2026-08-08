@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import type { AppEnv } from '@/app/Env'
-import { auth } from '@/app/Middleware/Auth'
+import { auth, requireRole } from '@/app/Middleware/Auth'
 import { UserController } from '@/app/Controllers/UserController'
 
 const usersRoutes = new Hono<AppEnv>()
@@ -8,8 +8,8 @@ const usersRoutes = new Hono<AppEnv>()
 usersRoutes.get('/me', auth, ...UserController.me)
 usersRoutes.patch('/profile', auth, ...UserController.profileUpdate)
 usersRoutes.patch('/password', auth, ...UserController.passwordUpdate)
-usersRoutes.get('/', ...UserController.index)
-usersRoutes.post('/', ...UserController.store)
-usersRoutes.get('/:id', ...UserController.show)
+usersRoutes.get('/', auth, requireRole('admin'), ...UserController.index)
+usersRoutes.post('/', auth, requireRole('admin'), ...UserController.store)
+usersRoutes.get('/:id', auth, requireRole('admin'), ...UserController.show)
 
 export default usersRoutes

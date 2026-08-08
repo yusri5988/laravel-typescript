@@ -1,33 +1,9 @@
 import { createMiddleware } from 'hono/factory'
-import { sign, verify } from 'hono/jwt'
-import type { Context } from 'hono'
 import type { AppEnv } from '@/app/Env'
-import type { UserResource } from '@/app/Models/User'
-import { authConfig } from '@/config/app'
+import { AuthenticationException } from '@/app/Exceptions/AuthenticationException'
+import { AuthorizationException } from '@/app/Exceptions/AuthorizationException'
+import { authServiceFrom } from '@/app/Services/AppServiceProvider'
 
-/**
- * Issue a JWT for a user (login).
- * Call from a handler: `const token = await issueToken(c, userResource)`.
- */
-export async function issueToken(c: Context<AppEnv>, user: UserResource): Promise<string> {
-  const secret = c.env.JWT_SECRET
-  if (!secret) {
-    throw new Error('JWT_SECRET is not configured.')
-  }
-  const payload = {
-    sub: String(user.id),
-    name: user.name,
-    email: user.email,
-    exp: Math.floor(Date.now() / 1000) + authConfig.jwtTtlSeconds,
-  }
-  return sign(payload, secret, 'HS256')
-}
-
-/**
- * Auth middleware — verifies `Authorization: Bearer <jwt>`.
- * Usage: `app.use('/api/protected/*', auth)`
- * On success, the handler reads `c.get('user')`.
- */
 export const auth = createMiddleware<AppEnv>(async (c, next) => {
   const header = c.req.header('Authorization')
   if (!header?.startsWith('Bearer ')) {
@@ -35,22 +11,23 @@ export const auth = createMiddleware<AppEnv>(async (c, next) => {
   }
 
   try {
-    const secret = c.env.JWT_SECRET
-    if (!secret) {
-      throw new Error('JWT_SECRET is not configured.')
-    }
-    const payload = await verify(header.slice(7), secret, 'HS256')
-
-    const user: UserResource = {
-      id: Number(payload.sub),
-      name: String(payload.name ?? ''),
-      email: String(payload.email ?? ''),
-      createdAt: new Date(0),
-      emailVerifiedAt: null,
-    }
-    c.set('user', user)
+    const identity = await authServiceFrom(c.env).authenticateToken(header.slice(7))
+    c.set('user', identity.user)
+    c.set('authSessionId', identity.sessionId)
     await next()
-  } catch {
-    return c.json({ message: 'Invalid token.' }, 401)
+  } catch (error) {
+    if (error instanceof AuthenticationException) {
+      return c.json({ message: error.message }, 401)
+    }
+    throw error
   }
 })
+
+export function requireRole(...roles: Array<'admin' | 'user'>) {
+  return createMiddleware<AppEnv>(async (c, next) => {
+    const user = c.get('user')
+    if (!user) return c.json({ message: 'Unauthenticated.' }, 401)
+    if (!roles.includes(user.role)) throw new AuthorizationException()
+    await next()
+  })
+}

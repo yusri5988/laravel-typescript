@@ -17,6 +17,9 @@
     "APP_NAME": "hono-laravel",
     "CORS_ORIGIN": "http://localhost:5173"
   },
+  "secrets": {
+    "required": ["JWT_SECRET"]
+  },
   "d1_databases": [
     {
       "binding": "DB",
