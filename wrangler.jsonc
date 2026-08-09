@@ -28,5 +28,21 @@
       "migrations_dir": "src/database/migrations"
     }
   ],
+  // Example Durable Object binding (uncomment to use):
+  // "durable_objects": {
+  //   "bindings": [
+  //     {
+  //       "name": "RATE_LIMITER",
+  //       "class_name": "RateLimiter"
+  //     }
+  //   ]
+  // },
+  // "workers_dev": true,
+  // "routes": [
+  //   {
+  //     "pattern": "example.com/*",
+  //     "zone_name": "example.com"
+  //   }
+  // ],
   "minify": true
 }

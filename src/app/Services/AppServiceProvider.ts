@@ -4,6 +4,7 @@ import * as schema from '@/database/schema'
 import type { AppEnv } from '@/app/Env'
 import { UserRepository } from '@/app/Repositories/UserRepository'
 import { AuthRepository } from '@/app/Repositories/AuthRepository'
+import { RateLimitRepository } from '@/app/Repositories/RateLimitRepository'
 import { AuthService } from '@/app/Services/AuthService'
 import { UserService } from '@/app/Services/UserService'
 
@@ -35,4 +36,17 @@ export function authServiceFrom(env: AppEnv['Bindings']) {
     new AuthRepository(db),
     env.JWT_SECRET
   )
+}
+
+/**
+ * Helper to resolve RateLimitRepository per-request.
+ * Requires Durable Object binding configured in wrangler.jsonc.
+ */
+export function rateLimitRepoFromEnv(env: AppEnv['Bindings']) {
+  // When RATE_LIMITER binding is configured:
+  // const doStub = env.RATE_LIMITER.get(env.RATE_LIMITER.idFromName('default'))
+  // return new RateLimitRepository(doStub)
+  
+  // Placeholder - returns empty repo until binding is available
+  return new RateLimitRepository(env as any)
 }

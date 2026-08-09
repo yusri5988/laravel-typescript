@@ -60,6 +60,7 @@ Do not silently reinterpret the user's scope. For a foundational architecture or
 src/
 |-- app/
 |   |-- Controllers/       # HTTP transport only
+|   |-- DurableObjects/    # Cloudflare Durable Objects (fetch-based)
 |   |-- Exceptions/        # typed application errors and global mapping
 |   |-- Middleware/        # cross-cutting request concerns
 |   |-- Models/            # domain, row, and safe resource types
@@ -225,6 +226,41 @@ Use one consistent JSON contract:
 - Registration always creates the safe `user` role. User collection, creation, and ID-based lookup routes are `admin` only; self-service routes require authentication.
 - Rate-limit credential and token issuance endpoints when the application is exposed publicly.
 - Authorization is deny-by-default. Listing, viewing, editing, and deleting resources require explicit role/ownership/tenant rules.
+
+## Durable Object Pattern
+
+When implementing Durable Objects, follow this structure:
+
+```text
+src/app/DurableObjects/
+  |-- RateLimiter.ts           # DO class (implements `fetch`)
+  |-- __init__.ts              # Module marker
+
+src/app/Repositories/
+  |-- RateLimitRepository.ts   # Wrapper around DO calls
+```
+
+**DO Implementation Rules:**
+
+1. **Place DO classes in `src/app/DurableObjects/`** — not in routes, services, or controllers.
+2. **Implement `fetch(request)` method** — all request handling happens through HTTP within the DO.
+3. **Use `state.storage` for persistence** — key-value storage accessible via `await state.storage.get/set/delete/list`.
+4. **Export default class** — Cloudflare Workers expects default export for DO bindings.
+5. **Create a Repository wrapper** — wrap DO fetch calls in `src/app/Repositories/` following the same pattern as other repositories.
+6. **Add factory helper in AppServiceProvider** — `doNameRepoFromEnv(env)` for per-request resolution.
+7. **Comment binding in wrangler.jsonc** — keep template examples commented until activation:
+   ```json
+   // "durable_objects": {
+   //   "bindings": [
+   //     { "name": "RATE_LIMITER", "class_name": "RateLimiter" }
+   //   ]
+   // },
+   ```
+
+**After enabling binding:**
+- Run `npm run typegen` to regenerate `worker-configuration.d.ts`
+- Update repository to use actual binding instead of placeholder
+- Add integration tests for the DO behavior
 
 ## Database and Migration Discipline
 
