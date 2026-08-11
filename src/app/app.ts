@@ -10,13 +10,16 @@ import web from '@/routes/web'
 /**
  * Application root — equivalent to Laravel's bootstrap/app.php.
  * Global middleware runs here; route modules are mounted with app.route().
- * Frontend static files are served for non-API routes.
+ * Frontend static files are served for non-API routes in production.
  */
 const app = new Hono<AppEnv>()
 
+// Allowed origins from environment or default to localhost
+const allowedOrigin = process.env.CORS_ORIGIN || '*'
+
 app.use('*', requestId)
 app.use('*', structuredLogger)
-app.use('/api/*', cors())
+app.use('/api/*', cors({ origin: allowedOrigin }))
 
 // API routes
 app.route('/api', api)

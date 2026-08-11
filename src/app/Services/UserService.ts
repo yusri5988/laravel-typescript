@@ -148,13 +148,14 @@ export class UserService {
       )
       const actual = new Uint8Array(
         await crypto.subtle.deriveBits(
-          { name: 'PBKDF2', salt, iterations, hash: 'SHA-256' },
+          { name: 'PBKDF2', salt: salt as BufferSource, iterations, hash: 'SHA-256' },
           key,
           expected.byteLength * 8
         )
       )
 
-      return actual.byteLength === expected.byteLength && crypto.subtle.timingSafeEqual(actual, expected)
+      return actual.byteLength === expected.byteLength && 
+        new Uint8Array(actual.buffer).every((v, i) => v === expected[i])
     } catch {
       return false
     }

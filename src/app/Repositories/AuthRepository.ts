@@ -50,6 +50,13 @@ export class AuthRepository implements AuthRepositoryContract {
       .where(and(eq(authSessions.id, id), eq(authSessions.userId, userId)))
   }
 
+  async revokeAllSessions(userId: number, revokedAt: Date): Promise<void> {
+    await this.db
+      .update(authSessions)
+      .set({ revokedAt })
+      .where(and(eq(authSessions.userId, userId), isNull(authSessions.revokedAt)))
+  }
+
   async updatePasswordAndRevokeSessions(
     userId: number,
     passwordHash: string,
@@ -68,12 +75,5 @@ export class AuthRepository implements AuthRepositoryContract {
     ])
 
     return updatedUsers.length === 1
-  }
-
-  async revokeAllSessions(userId: number, revokedAt: Date): Promise<void> {
-    await this.db
-      .update(authSessions)
-      .set({ revokedAt })
-      .where(and(eq(authSessions.userId, userId), isNull(authSessions.revokedAt)))
   }
 }
