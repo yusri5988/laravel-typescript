@@ -16,6 +16,7 @@ export interface AuthRepositoryContract {
     passwordHash: string,
     changedAt: Date
   ): Promise<boolean>
+  deleteUserAndRevokeSessions(userId: number): Promise<boolean>
 }
 
 export class AuthRepository implements AuthRepositoryContract {
@@ -75,5 +76,20 @@ export class AuthRepository implements AuthRepositoryContract {
     ])
 
     return updatedUsers.length === 1
+  }
+
+  async deleteUserAndRevokeSessions(userId: number): Promise<boolean> {
+    const [, deletedUsers] = await this.db.batch([
+      this.db
+        .update(authSessions)
+        .set({ revokedAt: new Date() })
+        .where(and(eq(authSessions.userId, userId), isNull(authSessions.revokedAt))),
+      this.db
+        .delete(users)
+        .where(eq(users.id, userId))
+        .returning({ id: users.id }),
+    ])
+
+    return deletedUsers.length === 1
   }
 }

@@ -41,6 +41,13 @@ export class UserService {
     return this.toResource(user)
   }
 
+  /** Returns the raw User row (with passwordHash) for internal service use. */
+  async findRaw(id: number): Promise<User> {
+    const user = await this.userRepository.findById(id)
+    if (!user) throw new NotFoundException('User')
+    return user
+  }
+
   async authenticate(email: string, password: string): Promise<UserResource> {
     const user = await this.userRepository.findByEmail(email)
     if (!user || !(await this.verifyPassword(password, user.passwordHash))) {
@@ -154,8 +161,12 @@ export class UserService {
         )
       )
 
-      return actual.byteLength === expected.byteLength && 
-        new Uint8Array(actual.buffer).every((v, i) => v === expected[i])
+      if (actual.byteLength !== expected.byteLength) return false
+      let diff = 0
+      for (let i = 0; i < actual.byteLength; i++) {
+        diff |= actual[i]! ^ expected[i]!
+      }
+      return diff === 0
     } catch {
       return false
     }

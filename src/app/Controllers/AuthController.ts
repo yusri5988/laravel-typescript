@@ -5,7 +5,7 @@ import { withData } from '@/helpers/response'
 const login = factory.createHandlers(loginUserRequest, async (c) => {
   const { email, password } = c.req.valid('json')
   const token = await authServiceFrom(c.env).login(email, password)
-  return c.json({ token })
+  return withData({ token })
 })
 
 const register = factory.createHandlers(storeUserRequest, async (c) => {
@@ -14,12 +14,10 @@ const register = factory.createHandlers(storeUserRequest, async (c) => {
 })
 
 const logout = factory.createHandlers(async (c) => {
-  const user = c.get('user')
-  const sessionId = c.get('authSessionId')
-  if (!user || !sessionId) return c.json({ message: 'Unauthenticated.' }, 401)
-
+  const user = c.get('user')!
+  const sessionId = c.get('authSessionId')!
   await authServiceFrom(c.env).logout(user.id, sessionId)
-  return c.json({ message: 'Logged out.' })
+  return withData({ message: 'Logged out.' })
 })
 
 export const AuthController = { login, register, logout }

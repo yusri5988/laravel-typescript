@@ -14,12 +14,11 @@ import web from '@/routes/web'
  */
 const app = new Hono<AppEnv>()
 
-// Allowed origins from environment or default to localhost
-const allowedOrigin = process.env.CORS_ORIGIN || '*'
-
 app.use('*', requestId)
 app.use('*', structuredLogger)
-app.use('/api/*', cors({ origin: allowedOrigin }))
+app.use('/api/*', cors({
+  origin: (origin, c) => c.env.CORS_ORIGIN || origin || '*',
+}))
 
 // API routes
 app.route('/api', api)

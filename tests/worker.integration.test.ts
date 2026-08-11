@@ -25,8 +25,8 @@ async function login(email: string): Promise<string> {
   })
 
   expect(response.status).toBe(200)
-  const body = await response.json<{ token: string }>()
-  return body.token
+  const body = await response.json<{ data: { token: string } }>()
+  return body.data.token
 }
 
 function bearer(token: string): HeadersInit {
@@ -142,7 +142,7 @@ describe.sequential('Worker integration', () => {
       body: JSON.stringify({ password: 'password123' }),
     })
     expect(response.status).toBe(200)
-    await expect(response.json()).resolves.toEqual({ message: 'Account deleted successfully.' })
+    await expect(response.json()).resolves.toEqual({ data: { message: 'Account deleted successfully.' } })
 
     const me = await exports.default.fetch('http://worker.test/api/users/me', {
       headers: bearer(token),

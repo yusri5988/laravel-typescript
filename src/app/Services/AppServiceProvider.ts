@@ -48,5 +48,5 @@ export function rateLimitRepoFromEnv(env: AppEnv['Bindings']) {
   // return new RateLimitRepository(doStub)
   
   // Placeholder - returns empty repo until binding is available
-  return new RateLimitRepository(env as any)
+  return new RateLimitRepository(env)
 }

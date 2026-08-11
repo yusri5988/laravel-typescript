@@ -29,38 +29,24 @@ const index = factory.createHandlers(listUsersRequest, async (c) => {
 })
 
 const me = factory.createHandlers(async (c) => {
-  const user = c.get('user')
-  if (!user) {
-    return c.json({ message: 'Unauthenticated.' }, 401)
-  }
-  return withData(user)
+  return withData(c.get('user')!)
 })
 
 const profileUpdate = factory.createHandlers(updateProfileRequest, async (c) => {
-  const user = c.get('user')
-  if (!user) return c.json({ message: 'Unauthenticated.' }, 401)
-  const updated = await userServiceFrom(c.env).updateProfile(user.id, c.req.valid('json'))
+  const updated = await userServiceFrom(c.env).updateProfile(c.get('user')!.id, c.req.valid('json'))
   return withData(updated)
 })
 
 const passwordUpdate = factory.createHandlers(updatePasswordRequest, async (c) => {
-  const user = c.get('user')
-  if (!user) return c.json({ message: 'Unauthenticated.' }, 401)
   const body = c.req.valid('json')
-  await authServiceFrom(c.env).updatePassword(user.id, body.currentPassword, body.password)
-  return c.json({ message: 'Password updated. Please log in again.' })
+  await authServiceFrom(c.env).updatePassword(c.get('user')!.id, body.currentPassword, body.password)
+  return withData({ message: 'Password updated. Please log in again.' })
 })
 
 const profileDelete = factory.createHandlers(deleteAccountRequest, async (c) => {
-  const user = c.get('user')
-  if (!user) return c.json({ message: 'Unauthenticated.' }, 401)
   const body = c.req.valid('json')
-  const authService = authServiceFrom(c.env)
-  const userService = userServiceFrom(c.env)
-  
-  await userService.deleteAccount(user.id, body.password)
-  await authService.revokeAllSessions(user.id)
-  return c.json({ message: 'Account deleted successfully.' })
+  await authServiceFrom(c.env).deleteUserAndRevokeSessions(c.get('user')!.id, body.password)
+  return withData({ message: 'Account deleted successfully.' })
 })
 
 export const UserController = {

@@ -1,5 +1,6 @@
 import { sign, verify } from 'hono/jwt'
 import { AuthenticationException } from '@/app/Exceptions/AuthenticationException'
+import { ValidationException } from '@/app/Exceptions/ValidationException'
 import { NotFoundException } from '@/app/Exceptions/NotFoundException'
 import type { AuthRepositoryContract } from '@/app/Repositories/AuthRepository'
 import type { UserResource } from '@/app/Models/User'
@@ -28,6 +29,12 @@ export class AuthService {
     const sessionId = crypto.randomUUID()
     const expiresAt = new Date(Date.now() + authConfig.jwtTtlSeconds * 1000)
 
+    await this.authRepository.createSession({
+      id: sessionId,
+      userId: user.id,
+      expiresAt,
+    })
+
     const token = await sign(
       {
         sub: String(user.id),
@@ -37,12 +44,6 @@ export class AuthService {
       this.secret,
       'HS256'
     )
-
-    await this.authRepository.createSession({
-      id: sessionId,
-      userId: user.id,
-      expiresAt,
-    })
 
     return token
   }
@@ -93,6 +94,16 @@ export class AuthService {
 
   async revokeAllSessions(userId: number): Promise<void> {
     await this.authRepository.revokeAllSessions(userId, new Date())
+  }
+
+  async deleteUserAndRevokeSessions(userId: number, password: string): Promise<void> {
+    const user = await this.userService.findRaw(userId)
+    if (!user) throw new NotFoundException('User')
+    if (!(await this.userService.verifyPassword(password, user.passwordHash))) {
+      throw new ValidationException({ password: ['The password is incorrect.'] })
+    }
+    const deleted = await this.authRepository.deleteUserAndRevokeSessions(userId)
+    if (!deleted) throw new NotFoundException('User')
   }
 
   private assertSecretConfigured(): void {
