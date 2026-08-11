@@ -91,6 +91,10 @@ export class AuthService {
     if (!updated) throw new NotFoundException('User')
   }
 
+  async revokeAllSessions(userId: number): Promise<void> {
+    await this.authRepository.revokeAllSessions(userId, new Date())
+  }
+
   private assertSecretConfigured(): void {
     if (!this.secret) throw new Error('JWT_SECRET is not configured.')
   }

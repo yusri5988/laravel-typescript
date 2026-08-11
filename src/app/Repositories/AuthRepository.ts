@@ -10,6 +10,7 @@ export interface AuthRepositoryContract {
   createSession(data: NewAuthSessionRow): Promise<AuthSessionRow>
   findActiveSession(id: string, userId: number, now: Date): Promise<AuthSessionRow | undefined>
   revokeSession(id: string, userId: number, revokedAt: Date): Promise<void>
+  revokeAllSessions(userId: number, revokedAt: Date): Promise<void>
   updatePasswordAndRevokeSessions(
     userId: number,
     passwordHash: string,
@@ -67,5 +68,12 @@ export class AuthRepository implements AuthRepositoryContract {
     ])
 
     return updatedUsers.length === 1
+  }
+
+  async revokeAllSessions(userId: number, revokedAt: Date): Promise<void> {
+    await this.db
+      .update(authSessions)
+      .set({ revokedAt })
+      .where(and(eq(authSessions.userId, userId), isNull(authSessions.revokedAt)))
   }
 }

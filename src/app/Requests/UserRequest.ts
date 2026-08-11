@@ -54,3 +54,8 @@ export const listUsersRequest = requestValidator(
     perPage: z.coerce.number().int().min(1).max(100).default(20),
   })
 )
+
+export const deleteAccountRequest = requestValidator('json', z.object({
+  password: z.string().min(1, 'Password is required to confirm account deletion.'),
+}))
+

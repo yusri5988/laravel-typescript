@@ -25,6 +25,7 @@ function repo(overrides: Partial<UserRepositoryContract> = {}): UserRepositoryCo
     paginate: async () => ({ rows: [], total: 0 }),
     create: async (data: { name: string; email: string; passwordHash: string }) => ({ ...fakeUser, ...data }),
     update: async () => undefined,
+    delete: async () => true,
     ...overrides,
   }
 }

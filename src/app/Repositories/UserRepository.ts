@@ -31,6 +31,7 @@ export interface UserRepositoryContract {
   paginate(page: number, perPage: number): Promise<UserPage>
   create(data: CreateUserData): Promise<User>
   update(id: number, data: UpdateUserData): Promise<User | undefined>
+  delete(id: number): Promise<boolean>
 }
 
 export class UserRepository implements UserRepositoryContract {
@@ -82,6 +83,11 @@ export class UserRepository implements UserRepositoryContract {
       if (this.isDuplicateEmail(error)) throw new DuplicateUserEmailError()
       throw error
     }
+  }
+
+  async delete(id: number): Promise<boolean> {
+    const result = await this.db.delete(users).where(eq(users.id, id)).returning({ id: users.id })
+    return result.length > 0
   }
 
   private isDuplicateEmail(error: unknown): boolean {

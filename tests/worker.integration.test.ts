@@ -130,4 +130,23 @@ describe.sequential('Worker integration', () => {
       expect(response.status).toBe(401)
     }
   })
+
+  it('deletes account with valid password and revokes sessions', async () => {
+    const token = await login('admin@example.com')
+    const response = await exports.default.fetch('http://worker.test/api/users/profile', {
+      method: 'DELETE',
+      headers: {
+        ...bearer(token),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ password: 'password123' }),
+    })
+    expect(response.status).toBe(200)
+    await expect(response.json()).resolves.toEqual({ message: 'Account deleted successfully.' })
+
+    const me = await exports.default.fetch('http://worker.test/api/users/me', {
+      headers: bearer(token),
+    })
+    expect(me.status).toBe(401)
+  })
 })

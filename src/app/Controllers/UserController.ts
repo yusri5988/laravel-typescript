@@ -1,6 +1,6 @@
 import { authServiceFrom, factory, userServiceFrom } from '@/app/Services/AppServiceProvider'
 import { paginated, withData } from '@/helpers/response'
-import { listUsersRequest, storeUserRequest, showUserRequest, updateProfileRequest, updatePasswordRequest } from '@/app/Requests/UserRequest'
+import { listUsersRequest, storeUserRequest, showUserRequest, updateProfileRequest, updatePasswordRequest, deleteAccountRequest } from '@/app/Requests/UserRequest'
 
 /**
  * Controllers — thin HTTP boundary.
@@ -51,6 +51,18 @@ const passwordUpdate = factory.createHandlers(updatePasswordRequest, async (c) =
   return c.json({ message: 'Password updated. Please log in again.' })
 })
 
+const profileDelete = factory.createHandlers(deleteAccountRequest, async (c) => {
+  const user = c.get('user')
+  if (!user) return c.json({ message: 'Unauthenticated.' }, 401)
+  const body = c.req.valid('json')
+  const authService = authServiceFrom(c.env)
+  const userService = userServiceFrom(c.env)
+  
+  await userService.deleteAccount(user.id, body.password)
+  await authService.revokeAllSessions(user.id)
+  return c.json({ message: 'Account deleted successfully.' })
+})
+
 export const UserController = {
   index,
   show,
@@ -58,4 +70,5 @@ export const UserController = {
   me,
   profileUpdate,
   passwordUpdate,
+  profileDelete,
 }

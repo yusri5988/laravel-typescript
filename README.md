@@ -1,173 +1,99 @@
-# Hono Laravel
+# Hono Laravel Template (Fullstack)
 
-Laravel-inspired backend starter built with Hono, TypeScript, Drizzle ORM, Cloudflare D1, and Cloudflare Workers.
+Hono + TypeScript + Drizzle ORM + React frontend — all on the same port.
 
-It keeps Laravel's predictable request flow without trying to recreate Laravel internally:
+## Architecture
 
-```text
-Route → Request Schema → Controller → Service → Repository → Drizzle → D1
+- **Backend**: Hono (Cloudflare Workers) + TypeScript + Drizzle ORM + D1
+- **Frontend**: React + Vite (TypeScript)
+- **Port**: 8787 for both frontend and backend
+
+## Project Structure
+
 ```
-
-## Features
-
-- Hono Worker entrypoint
-- Laravel-inspired `routes`, `Controllers`, `Services`, `Repositories`, `Requests`, `Middleware`, and `Exceptions`
-- TypeScript types generated from Wrangler configuration
-- Drizzle schema and committed D1 migrations
-- PBKDF2 password hashing through Workers Web Crypto
-- JWT authentication with revocable D1-backed sessions
-- `admin`/`user` authorization and admin-only user management
-- Breeze-inspired authentication endpoints for registration, login, logout, profile, and password changes
-- Standardized Zod `422` validation responses and JSON application errors
-- Deterministic pagination for collection endpoints
-- Configurable CORS origin
-- Workers Logs and Traces configuration
-- Unit tests and Worker-compatible test foundation
-
-## Project structure
-
-```text
 src/
-├── app/
-│   ├── Controllers/      # HTTP handlers; keep them thin
-│   ├── Exceptions/       # HTTP exceptions and global error handling
-│   ├── Middleware/       # auth, request ID, and cross-cutting concerns
-│   ├── Models/           # application types and resources
-│   ├── Repositories/     # Drizzle/D1 queries
-│   ├── Requests/         # Zod validation schemas
-│   ├── Services/         # business logic
-│   ├── Env.ts            # Hono environment types (Bindings & Variables)
-│   └── app.ts            # application bootstrap
-├── config/               # application configuration
-├── database/
-│   ├── migrations/       # committed SQL migrations
-│   ├── schema/           # Drizzle schema source of truth
-│   └── seeders/           # local/demo seed data
-├── helpers/              # response helpers
-├── routes/               # modular endpoint definitions (api, web, auth, users)
-└── index.ts              # Worker entrypoint
-tests/
-AGENTS.md                # architecture rules for contributors and coding agents
-wrangler.jsonc           # Worker and D1 configuration
-worker-configuration.d.ts # generated binding types
+|-- app/                    # Backend application layers
+|   |-- Controllers/
+|   |-- Services/
+|   |-- Repositories/
+|   |-- Middleware/
+|   `-- Requests/
+|-- routes/                 # API routes (/api/*)
+|-- frontend/               # React + Vite frontend
+|   |-- src/
+|   |   |-- App.tsx         # Main React component
+|   |   |-- main.tsx        # Entry point
+|   |   `-- index.css       # Styles
+|   |-- index.html          # HTML entry
+|   `-- vite.config.ts      # Vite configuration
+`-- dist/                   # Built frontend (generated)
 ```
 
-## Local development
-
-Requirements: Node.js 20+, npm, and Wrangler authentication only for remote operations.
+## Development
 
 ```bash
+# Install dependencies
 npm install
-copy .env.example .dev.vars       # PowerShell
-npm run typegen
-npm run db:migrate
-npm run db:seed
+
+# Start dev server (frontend on 5173, backend on 8787 with proxy)
 npm run dev
+
+# Or start separately
+npm run dev:frontend  # Frontend at http://localhost:5173
+npm run dev:backend   # Backend at http://localhost:8787
 ```
 
-The local Worker runs at `http://localhost:8787`.
+**Note**: In development mode, the frontend runs on port 5173 with a proxy to the backend on 8787. This is for easier hot-reload during development. The production build serves everything from one port.
 
-## D1 setup and deployment
-
-Create the remote database and follow the printed instructions:
-
-```powershell
-npm run setup:d1 -- -DatabaseName hono-laravel
-```
-
-Then configure the secret and deploy:
+## Build & Deploy
 
 ```bash
-npx wrangler secret put JWT_SECRET
-npm run typegen
-npm run db:migrate:remote
+# Build frontend and backend
+npm run build
+
+# Deploy to Cloudflare Workers
 npm run deploy
 ```
 
-`database_id` is intentionally a placeholder in `wrangler.jsonc`. A GitHub template cannot create a user's Cloudflare resources during clone, so the one-time D1 creation and secret setup remain required.
+## Scripts
 
-For remote demo data only:
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Start both frontend and backend |
+| `npm run dev:frontend` | Start frontend dev server only |
+| `npm run dev:backend` | Start backend dev server only |
+| `npm run build` | Build frontend and typecheck backend |
+| `npm run deploy` | Build and deploy to Cloudflare |
+| `npm test` | Run tests |
+| `npm run typecheck` | TypeScript type checking |
+| `npm run db:migrate` | Apply D1 migrations locally |
+| `npm run db:push` | Push schema changes (local prototyping only) |
 
-```bash
-npm run db:seed:remote
-```
-
-Do not use the demo seed password in a real deployment.
-
-## Database workflow
-
-Edit `src/database/schema/index.ts`, then generate and apply a migration:
-
-```bash
-npm run db:generate
-npm run db:migrate
-```
-
-Use `npm run db:push` only for local prototyping. Commit generated migration files for all shared environments.
-
-## Authentication demo
-
-The sample API includes:
-
-```text
-POST  /api/auth/login       Public
-POST  /api/auth/register    Public; always creates a `user`
-POST  /api/auth/logout      Authenticated; revokes the current session
-GET   /api/users/me         Authenticated
-PATCH /api/users/profile    Authenticated
-PATCH /api/users/password   Authenticated; revokes every session
-GET   /api/users            Admin; paginated with `page` and `perPage`
-POST  /api/users            Admin
-GET   /api/users/:id        Admin
-```
-
-Login expects an email and password. Passwords are stored using PBKDF2 with a random per-user salt. A JWT contains only `sub`, `jti`, and `exp`; every authenticated request also validates the persisted `auth_sessions` row and reloads the current user from D1. JWT signing requires `JWT_SECRET` from `.dev.vars` locally or `wrangler secret put JWT_SECRET` remotely.
-
-The seeded local users use:
-
-```text
-alice@example.com / password123  (admin)
-bob@example.com   / password123  (user)
-```
-
-Replace or remove this demo module when starting a real project.
-
-### Breeze-inspired API flow
-
-The authentication module follows the same published-code idea as Laravel Breeze:
-routes are modular, request validation is separated into `app/Requests`, HTTP handling stays in controllers, business rules stay in services, and D1 queries stay in repositories. Password reset and email verification token tables are included in the schema; an email provider must be connected before those tokens can be delivered to users.
-
-`AuthController` and `AuthService` own the authentication lifecycle. `AuthRepository` owns persisted sessions and the atomic password-change/session-revocation write. This keeps token logic out of middleware and user CRUD.
-
-## Tests and checks
+## Testing
 
 ```bash
-npm run typecheck
 npm test
-npm audit --omit=dev --audit-level=high
-npx wrangler deploy --dry-run
+npm run test:watch
 ```
 
-## Adding a resource
+## API Endpoints
 
-Follow the existing module pattern:
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/` | Service info |
+| GET | `/health` | Health check |
+| POST | `/api/auth/login` | Login |
+| POST | `/api/auth/register` | Register |
+| POST | `/api/auth/logout` | Logout (authenticated) |
+| GET | `/api/users/me` | Get current user (authenticated) |
+| GET | `/api/users` | List users (admin only) |
+| PATCH | `/api/users/password` | Change password (authenticated) |
+| DELETE | `/api/users/profile` | Delete account (authenticated) |
 
-1. Add the Drizzle table to `src/database/schema`.
-2. Generate and commit a migration.
-3. Add row/resource types in `src/app/Models`.
-4. Add database queries in a Repository.
-5. Add business rules in a Service.
-6. Add Zod schemas in `src/app/Requests`.
-7. Add thin Controller handlers.
-8. Register endpoints in `src/routes`.
-9. Add unit and Worker-level tests.
+## Frontend Demo
 
-See [AGENTS.md](./AGENTS.md) for the mandatory architecture guidelines.
-
-## AI agent rules
-
-`AGENTS.md` is the canonical architecture and implementation SOP for Codex and human contributors. Antigravity uses the workspace rule at [`.agents/rules/hono-laravel-architecture.md`](./.agents/rules/hono-laravel-architecture.md), which points back to the same source of truth to avoid duplicated or drifting instructions.
-
-## License
-
-MIT
+The React frontend includes:
+- API status check (fetches from `/api/`)
+- Loading/error states
+- Project structure info
+- Clean, modern UI

@@ -10,14 +10,17 @@ import web from '@/routes/web'
 /**
  * Application root — equivalent to Laravel's bootstrap/app.php.
  * Global middleware runs here; route modules are mounted with app.route().
+ * Frontend static files are served for non-API routes.
  */
 const app = new Hono<AppEnv>()
 
 app.use('*', requestId)
 app.use('*', structuredLogger)
-app.use('/api/*', (c, next) => cors({ origin: c.env.CORS_ORIGIN ?? 'http://localhost:5173' })(c, next))
+app.use('/api/*', cors())
 
+// API routes
 app.route('/api', api)
+// Web routes
 app.route('/', web)
 
 app.notFound(notFound)

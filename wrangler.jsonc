@@ -14,8 +14,7 @@
     }
   },
   "vars": {
-    "APP_NAME": "hono-laravel",
-    "CORS_ORIGIN": "http://localhost:5173"
+    "APP_NAME": "hono-laravel"
   },
   "secrets": {
     "required": ["JWT_SECRET"]
