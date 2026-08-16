@@ -2,11 +2,24 @@
 
 Hono + TypeScript + Drizzle ORM + React frontend — all on the same port.
 
+## Scaffold From npm
+
+Create and run a local project without cloning the repository:
+
+```powershell
+mkdir my-hono-app
+cd my-hono-app
+npx hono-laravel setup
+npm run dev
+```
+
+The setup command installs dependencies, creates a local `.dev.vars` file, builds frontend assets, and applies local D1 migrations. The application runs at `http://127.0.0.1:8787`.
+
 ## Architecture
 
 - **Backend**: Hono (Cloudflare Workers) + TypeScript + Drizzle ORM + D1
 - **Frontend**: React + Vite (TypeScript)
-- **Port**: 8787 for both frontend and backend
+- **Port**: 8787 for frontend and backend in local Worker mode
 
 ## Project Structure
 
@@ -26,7 +39,7 @@ src/
 |   |   `-- index.css       # Styles
 |   |-- index.html          # HTML entry
 |   `-- vite.config.ts      # Vite configuration
-`-- dist/                   # Built frontend (generated)
+`-- src/dist/               # Built frontend (generated)
 ```
 
 ## Development
@@ -35,15 +48,17 @@ src/
 # Install dependencies
 npm install
 
-# Start dev server (frontend on 5173, backend on 8787 with proxy)
+# Build assets and start the local Worker
 npm run dev
 
-# Or start separately
+# Optional Vite frontend with API proxy
 npm run dev:frontend  # Frontend at http://localhost:5173
-npm run dev:backend   # Backend at http://localhost:8787
+
+# Start Wrangler local Worker directly
+npm run dev:backend   # Application at http://127.0.0.1:8787
 ```
 
-**Note**: In development mode, the frontend runs on port 5173 with a proxy to the backend on 8787. This is for easier hot-reload during development. The production build serves everything from one port.
+The default `npm run dev` builds `src/dist/`, then starts Wrangler with local D1 and the configured `ASSETS` binding. Vite mode remains available when hot reload is needed.
 
 ## Build & Deploy
 
@@ -59,7 +74,7 @@ npm run deploy
 
 | Script | Description |
 |--------|-------------|
-| `npm run dev` | Start both frontend and backend |
+| `npm run dev` | Build assets and start the local Worker on port 8787 |
 | `npm run dev:frontend` | Start frontend dev server only |
 | `npm run dev:backend` | Start backend dev server only |
 | `npm run build` | Build frontend and typecheck backend |

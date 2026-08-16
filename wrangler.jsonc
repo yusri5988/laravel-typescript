@@ -22,7 +22,7 @@
   ],
   "vars": {
     "APP_NAME": "hono-laravel",
-    "CORS_ORIGIN": "*"
+    "CORS_ORIGIN": "http://127.0.0.1:8787"
   },
   "secrets": {
     "required": ["JWT_SECRET"]

@@ -1,0 +1,21 @@
+{
+  "name": "hono-laravel",
+  "version": "0.1.0",
+  "description": "Scaffold a Hono Laravel project with local Wrangler, D1, and React assets.",
+  "type": "module",
+  "bin": {
+    "hono-laravel": "bin/hono-laravel.mjs"
+  },
+  "files": [
+    "bin",
+    "template",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "prepack": "node ../../scripts/build-cli-template.mjs"
+  },
+  "license": "UNLICENSED"
+}

@@ -9,3 +9,4 @@ wrangler-local-state/
 !.env.example
 .vitest/
 coverage/
+packages/cli/template/
