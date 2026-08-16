@@ -20,12 +20,13 @@ Options:
   --help           Show this help`)
 }
 
-function run(command, args, cwd) {
+function run(command, args, cwd, options = {}) {
   const executable = process.platform === 'win32' && command === 'npm' ? 'npm.cmd' : command
   const result = spawnSync(executable, args, {
     cwd,
-    stdio: 'inherit',
+    stdio: options.input === undefined ? 'inherit' : ['pipe', 'inherit', 'inherit'],
     shell: process.platform === 'win32',
+    input: options.input,
   })
 
   if (result.error) throw result.error
@@ -97,7 +98,7 @@ async function setup(args) {
 
   if (!skipMigrate) {
     console.log('\nApplying local D1 migrations...')
-    run('npm', ['run', 'db:migrate'], targetDirectory)
+    run('npm', ['run', 'db:migrate'], targetDirectory, { input: 'yes\n' })
   }
 
   console.log('\nSetup complete.')

@@ -1,6 +1,6 @@
 {
   "name": "hono-laravel",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Scaffold a Hono Laravel project with local Wrangler, D1, and React assets.",
   "type": "module",
   "bin": {
