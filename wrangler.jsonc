@@ -7,11 +7,17 @@
   "observability": {
     "enabled": true
   },
+  "assets": {
+    "directory": "./src/dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application"
+  },
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "hono-laravel",
-      "database_id": "YOUR-DATABASE-ID"
+      "database_id": "YOUR-DATABASE-ID",
+      "migrations_dir": "./src/database/migrations"
     }
   ],
   "vars": {

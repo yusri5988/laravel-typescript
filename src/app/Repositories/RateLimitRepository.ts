@@ -37,7 +37,3 @@ export class RateLimitRepository {
     // await doStub.fetch(`/rate/increment/${key}`, { method: 'POST' })
   }
 }
-
-export function rateLimitRepoFromEnv(env: AppEnv['Bindings']): RateLimitRepository {
-  return new RateLimitRepository(env)
-}

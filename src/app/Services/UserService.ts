@@ -107,15 +107,6 @@ export class UserService {
     return this.hashPassword(password)
   }
 
-  async deleteAccount(id: number, password: string): Promise<void> {
-    const user = await this.userRepository.findById(id)
-    if (!user) throw new NotFoundException('User')
-    if (!(await this.verifyPassword(password, user.passwordHash))) {
-      throw new ValidationException({ password: ['The password is incorrect.'] })
-    }
-    await this.userRepository.delete(id)
-  }
-
   /** PBKDF2 password hashing using Workers Web Crypto. */
   async hashPassword(password: string): Promise<string> {
     const iterations = 120_000

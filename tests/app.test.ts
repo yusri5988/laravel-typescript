@@ -26,7 +26,10 @@ const env: AppEnv['Bindings'] = {
   DB: createDb(),
   JWT_SECRET: 'test-secret',
   APP_NAME: 'hono-laravel',
-  CORS_ORIGIN: 'http://localhost:5173',
+  CORS_ORIGIN: '*',
+  ASSETS: {
+    fetch: async () => new Response('<div id="root"></div>', { status: 200 }),
+  } as unknown as Fetcher,
 }
 
 describe('web routes', () => {
@@ -42,8 +45,14 @@ describe('web routes', () => {
     await expect(res.json()).resolves.toEqual({ status: 'ok' })
   })
 
-  it('GET /unknown returns 404 JSON', async () => {
-    const res = await app.request('http://localhost/unknown', {}, env)
+  it('returns the SPA shell for unknown non-API routes', async () => {
+    const res = await app.request('http://localhost/login', {}, env)
+    expect(res.status).toBe(200)
+    expect(await res.text()).toContain('<div id="root"></div>')
+  })
+
+  it('returns 404 JSON for unknown API routes', async () => {
+    const res = await app.request('http://localhost/api/unknown', {}, env)
     expect(res.status).toBe(404)
     await expect(res.json()).resolves.toEqual({ message: 'Not Found' })
   })
