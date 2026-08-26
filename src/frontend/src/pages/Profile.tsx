@@ -48,13 +48,13 @@ function ProfileContent({ user, setUser }: ProfileFormProps) {
     try {
       const updated = await api.updateProfile({ name, email })
       setUser(updated)
-      setProfileSuccess('Profil berjaya dikemaskini!')
+      setProfileSuccess('Profile updated successfully!')
     } catch (err) {
       if (err instanceof ApiErrorException) {
         setProfileError(err.message)
         if (err.errors) setProfileFieldErrors(err.errors)
       } else {
-        setProfileError('Gagal mengemas kini profil. Sila cuba lagi.')
+        setProfileError('Failed to update profile. Please try again.')
       }
     } finally {
       setProfileLoading(false)
@@ -70,7 +70,7 @@ function ProfileContent({ user, setUser }: ProfileFormProps) {
 
     try {
       const res = await api.updatePassword({ currentPassword, password, passwordConfirmation })
-      setPasswordSuccess(res.message || 'Kata laluan berjaya dikemaskini. Sila log masuk semula.')
+      setPasswordSuccess(res.message || 'Password updated successfully. Please log in again.')
       setCurrentPassword('')
       setPassword('')
       setPasswordConfirmation('')
@@ -83,7 +83,7 @@ function ProfileContent({ user, setUser }: ProfileFormProps) {
         setPasswordError(err.message)
         if (err.errors) setPasswordFieldErrors(err.errors)
       } else {
-        setPasswordError('Gagal menukar kata laluan. Sila cuba lagi.')
+        setPasswordError('Failed to change password. Please try again.')
       }
     } finally {
       setPasswordLoading(false)
@@ -103,7 +103,7 @@ function ProfileContent({ user, setUser }: ProfileFormProps) {
       if (err instanceof ApiErrorException) {
         setDeleteError(err.message)
       } else {
-        setDeleteError('Gagal memadam akaun. Sila semak kata laluan anda.')
+        setDeleteError('Failed to delete account. Please check your password.')
       }
     } finally {
       setDeleteLoading(false)
@@ -116,13 +116,13 @@ function ProfileContent({ user, setUser }: ProfileFormProps) {
         <div className="cf-page-title-group">
           <h1>User Profile</h1>
           <p className="cf-page-subtitle">
-            Urus tetapan maklumat akaun, kata laluan, dan keselamatan anda.
+            Manage your account information, password, and security settings.
           </p>
         </div>
       </div>
 
       <div className="cf-profile-grid">
-        {/* 1. Maklumat Profil */}
+        {/* 1. Profile Information */}
         <div className="cf-card">
           <div className="cf-card-header">
             <div className="cf-card-header-icon">
@@ -132,8 +132,8 @@ function ProfileContent({ user, setUser }: ProfileFormProps) {
               </svg>
             </div>
             <div>
-              <h2 className="cf-card-title">Maklumat Profil</h2>
-              <p className="cf-card-desc">Kemas kini nama paparan dan alamat emel akaun anda.</p>
+              <h2 className="cf-card-title">Profile Information</h2>
+              <p className="cf-card-desc">Update your display name and email address.</p>
             </div>
           </div>
 
@@ -160,7 +160,7 @@ function ProfileContent({ user, setUser }: ProfileFormProps) {
             )}
 
             <div className="cf-form-group">
-              <label htmlFor="profile-name" className="cf-label">Nama Penuh</label>
+              <label htmlFor="profile-name" className="cf-label">Full Name</label>
               <input
                 id="profile-name"
                 type="text"
@@ -175,7 +175,7 @@ function ProfileContent({ user, setUser }: ProfileFormProps) {
             </div>
 
             <div className="cf-form-group">
-              <label htmlFor="profile-email" className="cf-label">Alamat Emel</label>
+              <label htmlFor="profile-email" className="cf-label">Email Address</label>
               <input
                 id="profile-email"
                 type="email"
@@ -191,18 +191,18 @@ function ProfileContent({ user, setUser }: ProfileFormProps) {
 
             <div className="cf-profile-meta-row">
               <span className="cf-badge-role">Role: {user.role.toUpperCase()}</span>
-              <span className="cf-text-muted-sm">Didaftarkan pada: {new Date(user.createdAt).toLocaleDateString()}</span>
+              <span className="cf-text-muted-sm">Registered on: {new Date(user.createdAt).toLocaleDateString()}</span>
             </div>
 
             <div className="cf-card-footer">
               <button type="submit" className="cf-btn-primary cf-btn-fit" disabled={profileLoading}>
-                {profileLoading ? 'Menyimpan...' : 'Simpan Profil'}
+                {profileLoading ? 'Saving...' : 'Save Profile'}
               </button>
             </div>
           </form>
         </div>
 
-        {/* 2. Tukar Kata Laluan */}
+        {/* 2. Change Password */}
         <div className="cf-card">
           <div className="cf-card-header">
             <div className="cf-card-header-icon">
@@ -212,8 +212,8 @@ function ProfileContent({ user, setUser }: ProfileFormProps) {
               </svg>
             </div>
             <div>
-              <h2 className="cf-card-title">Tukar Kata Laluan</h2>
-              <p className="cf-card-desc">Pastikan akaun anda menggunakan kata laluan panjang dan rawak.</p>
+              <h2 className="cf-card-title">Change Password</h2>
+              <p className="cf-card-desc">Make sure your account uses a long, random password.</p>
             </div>
           </div>
 
@@ -240,7 +240,7 @@ function ProfileContent({ user, setUser }: ProfileFormProps) {
             )}
 
             <div className="cf-form-group">
-              <label htmlFor="current-password" className="cf-label">Kata Laluan Semasa</label>
+              <label htmlFor="current-password" className="cf-label">Current Password</label>
               <input
                 id="current-password"
                 type="password"
@@ -255,14 +255,14 @@ function ProfileContent({ user, setUser }: ProfileFormProps) {
             </div>
 
             <div className="cf-form-group">
-              <label htmlFor="new-password" className="cf-label">Kata Laluan Baharu</label>
+              <label htmlFor="new-password" className="cf-label">New Password</label>
               <input
                 id="new-password"
                 type="password"
                 className={`cf-input ${passwordFieldErrors.password ? 'has-error' : ''}`}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Sekurang-kurangnya 8 aksara"
+                placeholder="At least 8 characters"
                 required
               />
               {passwordFieldErrors.password && (
@@ -271,7 +271,7 @@ function ProfileContent({ user, setUser }: ProfileFormProps) {
             </div>
 
             <div className="cf-form-group">
-              <label htmlFor="confirm-password" className="cf-label">Sahkan Kata Laluan Baharu</label>
+              <label htmlFor="confirm-password" className="cf-label">Confirm New Password</label>
               <input
                 id="confirm-password"
                 type="password"
@@ -287,13 +287,13 @@ function ProfileContent({ user, setUser }: ProfileFormProps) {
 
             <div className="cf-card-footer">
               <button type="submit" className="cf-btn-primary cf-btn-fit" disabled={passwordLoading}>
-                {passwordLoading ? 'Mengemas kini...' : 'Kemas Kini Kata Laluan'}
+                {passwordLoading ? 'Updating...' : 'Update Password'}
               </button>
             </div>
           </form>
         </div>
 
-        {/* 3. Danger Zone / Padam Akaun */}
+        {/* 3. Danger Zone / Delete Account */}
         <div className="cf-card cf-card-danger">
           <div className="cf-card-header">
             <div className="cf-card-header-icon danger">
@@ -304,14 +304,14 @@ function ProfileContent({ user, setUser }: ProfileFormProps) {
               </svg>
             </div>
             <div>
-              <h2 className="cf-card-title text-danger">Padam Akaun</h2>
-              <p className="cf-card-desc">Padam akaun anda dan semua data sesi secara kekal.</p>
+              <h2 className="cf-card-title text-danger">Delete Account</h2>
+              <p className="cf-card-desc">Delete your account and all session data permanently.</p>
             </div>
           </div>
 
           <div className="cf-danger-body">
             <p className="cf-danger-warning">
-              Setelah akaun anda dipadam, semua maklumat dan sesi akan dibatalkan secara kekal. Tindakan ini tidak boleh diundur.
+              Once your account is deleted, all information and sessions will be permanently canceled. This action cannot be undone.
             </p>
 
             {!showDeleteModal ? (
@@ -320,7 +320,7 @@ function ProfileContent({ user, setUser }: ProfileFormProps) {
                 className="cf-btn-danger"
                 onClick={() => setShowDeleteModal(true)}
               >
-                Padam Akaun Saya
+                Delete My Account
               </button>
             ) : (
               <form onSubmit={handleDeleteAccount} className="cf-delete-confirm-box">
@@ -330,14 +330,14 @@ function ProfileContent({ user, setUser }: ProfileFormProps) {
                   </div>
                 )}
                 <label htmlFor="delete-account-password" className="cf-label">
-                  Masukkan kata laluan untuk mengesahkan pemadaman akaun:
+                  Enter your password to confirm account deletion:
                 </label>
                 <div className="cf-delete-action-row">
                   <input
                     id="delete-account-password"
                     type="password"
                     className="cf-input"
-                    placeholder="Kata laluan akaun"
+                    placeholder="Account password"
                     value={deletePassword}
                     onChange={(e) => setDeletePassword(e.target.value)}
                     required
@@ -347,7 +347,7 @@ function ProfileContent({ user, setUser }: ProfileFormProps) {
                     className="cf-btn-danger cf-btn-fit"
                     disabled={deleteLoading}
                   >
-                    {deleteLoading ? 'Memadam...' : 'Sahkan Padam'}
+                    {deleteLoading ? 'Deleting...' : 'Confirm Delete'}
                   </button>
                   <button
                     type="button"
@@ -358,7 +358,7 @@ function ProfileContent({ user, setUser }: ProfileFormProps) {
                       setDeleteError(null)
                     }}
                   >
-                    Batal
+                    Cancel
                   </button>
                 </div>
               </form>

@@ -22,6 +22,35 @@ interface AppLayoutProps {
   children: ReactNode | ((context: AuthContextType) => ReactNode)
 }
 
+function SquaresPlusIcon({ className = '', style = {} }: { className?: string; style?: React.CSSProperties }) {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}>
+      <rect width="7" height="7" x="3" y="3" rx="1" />
+      <rect width="7" height="7" x="14" y="3" rx="1" />
+      <rect width="7" height="7" x="14" y="14" rx="1" />
+      <rect width="7" height="7" x="3" y="14" rx="1" />
+    </svg>
+  )
+}
+
+function HomeIcon({ className = '' }: { className?: string }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+      <polyline points="9 22 9 12 15 12 15 22" />
+    </svg>
+  )
+}
+
+function Cog6ToothIcon({ className = '' }: { className?: string }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <circle cx="12" cy="12" r="3" />
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+    </svg>
+  )
+}
+
 export function AppLayout({ children }: AppLayoutProps) {
   const navigate = useNavigate()
   const location = useLocation()
@@ -76,10 +105,10 @@ export function AppLayout({ children }: AppLayoutProps) {
               type="button"
               className="cf-sidebar-toggle-btn"
               onClick={() => setSidebarOpen((prev) => !prev)}
-              title={sidebarOpen ? 'Tutup sidebar' : 'Buka sidebar'}
+              title={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
               aria-label="Toggle sidebar"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="3" y1="12" x2="21" y2="12" />
                 <line x1="3" y1="6" x2="21" y2="6" />
                 <line x1="3" y1="18" x2="21" y2="18" />
@@ -87,16 +116,16 @@ export function AppLayout({ children }: AppLayoutProps) {
             </button>
 
             <Link to="/dashboard" className="cf-navbar-brand">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
-              </svg>
-              <span>Cloudflare</span>
+              <div className="cf-brand-icon-wrap">
+                <SquaresPlusIcon />
+              </div>
+              <span className="cf-brand-text">Product Inc.</span>
             </Link>
           </div>
 
           <div className="cf-navbar-right">
             <div className="cf-user-menu">
-              <Link to="/profile" className="cf-user-avatar" title={`Edit profil (${user.email})`}>
+              <Link to="/profile" className="cf-user-avatar" title={`Edit Profile (${user.email})`}>
                 {userInitial}
               </Link>
               <button className="cf-btn-logout" onClick={handleLogout} title="Sign out of account">
@@ -106,7 +135,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           </div>
         </header>
 
-        {/* Main Shell with Slidable Sidebar */}
+        {/* Main Shell with Slidable SideNav */}
         <div className="cf-dashboard-shell">
           {/* Backdrop overlay on small screens */}
           {sidebarOpen && (
@@ -117,21 +146,15 @@ export function AppLayout({ children }: AppLayoutProps) {
             />
           )}
 
-          {/* Slidable Sidebar Menu */}
+          {/* Slidable SideNav Menu */}
           <aside className={`cf-sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
             <div className="cf-sidebar-section">
-              <div className="cf-sidebar-label">Manage</div>
               <nav className="cf-sidebar-nav">
                 <Link
                   to="/dashboard"
                   className={`cf-sidebar-item ${location.pathname === '/dashboard' ? 'active' : ''}`}
                 >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="3" width="7" height="7" />
-                    <rect x="14" y="3" width="7" height="7" />
-                    <rect x="14" y="14" width="7" height="7" />
-                    <rect x="3" y="14" width="7" height="7" />
-                  </svg>
+                  <HomeIcon />
                   <span>Dashboard</span>
                 </Link>
 
@@ -139,17 +162,14 @@ export function AppLayout({ children }: AppLayoutProps) {
                   to="/profile"
                   className={`cf-sidebar-item ${location.pathname === '/profile' ? 'active' : ''}`}
                 >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                    <circle cx="12" cy="7" r="4" />
-                  </svg>
-                  <span>Profile</span>
+                  <Cog6ToothIcon />
+                  <span>Settings</span>
                 </Link>
               </nav>
             </div>
 
             <div className="cf-sidebar-footer">
-              <span>Hono Laravel v0.1.0</span>
+              <span>Product Inc. &bull; v0.1.0</span>
             </div>
           </aside>
 
@@ -162,3 +182,6 @@ export function AppLayout({ children }: AppLayoutProps) {
     </AuthContext.Provider>
   )
 }
+
+
+
