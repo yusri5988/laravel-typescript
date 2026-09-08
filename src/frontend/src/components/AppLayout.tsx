@@ -56,7 +56,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   const location = useLocation()
   const [user, setUser] = useState<UserResource | null>(null)
   const [loading, setLoading] = useState(true)
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   useEffect(() => {
     if (!getToken()) {
@@ -182,6 +182,5 @@ export function AppLayout({ children }: AppLayoutProps) {
     </AuthContext.Provider>
   )
 }
-
 
 
