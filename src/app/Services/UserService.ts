@@ -109,7 +109,7 @@ export class UserService {
 
   /** PBKDF2 password hashing using Workers Web Crypto. */
   async hashPassword(password: string): Promise<string> {
-    const iterations = 120_000
+    const iterations = 100_000
     const salt = crypto.getRandomValues(new Uint8Array(16))
     const key = await crypto.subtle.importKey(
       'raw',
