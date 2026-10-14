@@ -39,7 +39,7 @@ src/
 |   |   `-- index.css       # Styles
 |   |-- index.html          # HTML entry
 |   `-- vite.config.ts      # Vite configuration
-`-- src/dist/               # Built frontend (generated)
+`-- dist/                   # Built frontend (generated; never edit manually)
 ```
 
 ## Development
@@ -58,7 +58,9 @@ npm run dev:frontend  # Frontend at http://localhost:5173
 npm run dev:backend   # Application at http://127.0.0.1:8787
 ```
 
-The default `npm run dev` builds `src/dist/`, then starts Wrangler with local D1 and the configured `ASSETS` binding. Vite mode remains available when hot reload is needed.
+The default `npm run dev` builds the frontend into root `dist/`, then starts Wrangler with local D1 and the configured `ASSETS` binding. Vite mode remains available when hot reload is needed.
+
+Login and registration requests are rate limited by Cloudflare client IP. The API uses a fail-closed CORS allowlist: same-origin requests work with an empty `CORS_ORIGINS`; configure comma-separated, exact browser origins only when a separate frontend origin is required.
 
 ## Build & Deploy
 

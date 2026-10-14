@@ -38,15 +38,6 @@ export function authServiceFrom(env: AppEnv['Bindings']) {
   )
 }
 
-/**
- * Helper to resolve RateLimitRepository per-request.
- * Requires Durable Object binding configured in wrangler.jsonc.
- */
 export function rateLimitRepoFromEnv(env: AppEnv['Bindings']) {
-  // When RATE_LIMITER binding is configured:
-  // const doStub = env.RATE_LIMITER.get(env.RATE_LIMITER.idFromName('default'))
-  // return new RateLimitRepository(doStub)
-  
-  // Placeholder - returns empty repo until binding is available
   return new RateLimitRepository(env)
 }

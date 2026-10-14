@@ -2,7 +2,7 @@ import { zValidator } from '@hono/zod-validator'
 import type { ValidationTargets } from 'hono'
 import { z } from 'zod'
 
-function fieldErrors(error: z.ZodError): Record<string, string[]> {
+function fieldErrors(error: { issues: z.ZodIssue[] }): Record<string, string[]> {
   const errors: Record<string, string[]> = {}
 
   for (const issue of error.issues) {

@@ -1,285 +1,6 @@
-import { useState, type FormEvent, type CSSProperties } from 'react'
+import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { api, setToken, ApiErrorException } from '../lib/api'
-
-const COVER_IMAGE_URL =
-  'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1000&q=80'
-
-const COLUMN_MIN_WIDTH = 240
-
-const pageStyle: CSSProperties = {
-  minHeight: '100vh',
-  backgroundColor: '#f8fafc',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  padding: '24px 16px',
-}
-
-const cardWrap: CSSProperties = {
-  width: '100%',
-  maxWidth: 960,
-  marginInline: 'auto',
-}
-
-const coverImage: CSSProperties = {
-  width: '100%',
-  height: '100%',
-  minHeight: '320px',
-  maxHeight: '520px',
-  objectFit: 'cover',
-  display: 'block',
-  borderRadius: '12px',
-}
-
-const LOGIN_SPLIT_CSS = `
-.login-split-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
-  overflow: hidden;
-}
-
-.login-split-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(${COLUMN_MIN_WIDTH}px, 1fr));
-  gap: 24px;
-  align-items: stretch;
-  padding: 24px;
-  container-type: inline-size;
-  container-name: login-split;
-}
-
-.login-split-form-col {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: 100%;
-}
-
-.login-split-image {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  order: 0;
-}
-
-.login-split-image-inner {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  border-radius: 10px;
-  background: #f1f5f9;
-}
-
-@container login-split (max-width: 511px) {
-  .login-split-grid {
-    padding: 16px;
-    gap: 18px;
-  }
-  .login-split-image {
-    order: -1;
-  }
-  .login-split-image-inner {
-    max-height: 180px;
-  }
-}
-
-.login-brand-header {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 600;
-  font-size: 0.9375rem;
-  color: #0f172a;
-  margin-bottom: 18px;
-}
-
-.login-brand-icon {
-  color: #f38020;
-  display: flex;
-  align-items: center;
-}
-
-.login-title-group {
-  margin-bottom: 18px;
-}
-
-.login-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #0f172a;
-  letter-spacing: -0.02em;
-  margin-bottom: 4px;
-}
-
-.login-subtitle {
-  font-size: 0.8125rem;
-  color: #64748b;
-}
-
-.login-input-group {
-  margin-bottom: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.login-text-input {
-  width: 100%;
-  padding: 9px 12px;
-  font-size: 0.8125rem;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  background-color: #ffffff;
-  color: #0f172a;
-  transition: all 0.15s ease;
-  outline: none;
-}
-
-.login-text-input:focus {
-  border-color: #f38020;
-  box-shadow: 0 0 0 2px rgba(243, 128, 32, 0.15);
-}
-
-.login-text-input.input-error {
-  border-color: #ef4444;
-}
-
-.login-text-input.input-error:focus {
-  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.15);
-}
-
-.login-error-msg {
-  font-size: 0.75rem;
-  color: #ef4444;
-  margin-top: 2px;
-}
-
-.login-forgot-wrap {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 2px;
-}
-
-.login-forgot-link {
-  font-size: 0.75rem;
-  color: #64748b;
-  text-decoration: none;
-  transition: color 0.15s ease;
-}
-
-.login-forgot-link:hover {
-  color: #0f172a;
-  text-decoration: underline;
-}
-
-.login-submit-btn {
-  width: 100%;
-  padding: 9px 14px;
-  background-color: #f38020;
-  color: #ffffff;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  transition: background-color 0.15s ease, transform 0.05s ease;
-  margin-top: 6px;
-}
-
-.login-submit-btn:hover:not(:disabled) {
-  background-color: #e56a0c;
-}
-
-.login-submit-btn:active:not(:disabled) {
-  transform: translateY(1px);
-}
-
-.login-submit-btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-.login-footer-text {
-  font-size: 0.8125rem;
-  color: #64748b;
-  margin-top: 18px;
-}
-
-.login-footer-link {
-  color: #f38020;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.login-footer-link:hover {
-  text-decoration: underline;
-}
-
-.login-terms-text {
-  font-size: 0.6875rem;
-  color: #94a3b8;
-  text-align: center;
-  margin-top: 16px;
-  line-height: 1.5;
-}
-
-.login-terms-link {
-  color: #64748b;
-  text-decoration: underline;
-}
-
-.login-empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 32px 12px;
-  gap: 8px;
-}
-
-.login-empty-icon {
-  color: #10b981;
-}
-
-.login-empty-title {
-  font-size: 1.0625rem;
-  font-weight: 700;
-  color: #0f172a;
-}
-
-.login-empty-desc {
-  font-size: 0.8125rem;
-  color: #64748b;
-}
-`
-
-function SquaresPlusIcon() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect width="7" height="7" x="3" y="3" rx="1" />
-      <rect width="7" height="7" x="14" y="3" rx="1" />
-      <rect width="7" height="7" x="14" y="14" rx="1" />
-      <rect width="7" height="7" x="3" y="14" rx="1" />
-    </svg>
-  )
-}
-
-function CheckCircleIcon() {
-  return (
-    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-      <polyline points="22 4 12 14.01 9 11.01" />
-    </svg>
-  )
-}
 
 export default function Login() {
   const navigate = useNavigate()
@@ -295,7 +16,7 @@ export default function Login() {
 
     if (!email || !password) {
       setLoginFailed(true)
-      setErrorMessage('Please enter both email and password.')
+      setErrorMessage('Please enter both your email and password.')
       return
     }
 
@@ -309,14 +30,14 @@ export default function Login() {
       setIsSuccess(true)
       setTimeout(() => {
         navigate('/dashboard')
-      }, 1200)
+      }, 900)
     } catch (err) {
       setLoginFailed(true)
       if (err instanceof ApiErrorException) {
         const errorText = err.errors?.email?.join(' ') || err.errors?.password?.join(' ') || err.message
-        setErrorMessage(errorText || 'Incorrect credentials. Try again.')
+        setErrorMessage(errorText || 'Incorrect credentials. Please verify and try again.')
       } else {
-        setErrorMessage('Incorrect password or credentials. Try again.')
+        setErrorMessage('Could not sign in with these credentials. Try again.')
       }
     } finally {
       setIsLoading(false)
@@ -324,133 +45,301 @@ export default function Login() {
   }
 
   return (
-    <div style={pageStyle}>
-      <style>{LOGIN_SPLIT_CSS}</style>
-      <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <div style={cardWrap}>
-          <div className="login-split-card">
-            <div className="login-split-grid">
-              {/* Form Side */}
-              <div className="login-split-form-col">
-                <div>
-                  {/* Brand */}
-                  <div className="login-brand-header">
-                    <div className="login-brand-icon">
-                      <SquaresPlusIcon />
-                    </div>
-                    <span>Product Inc.</span>
-                  </div>
-
-                  {isSuccess ? (
-                    <div className="login-empty-state">
-                      <div className="login-empty-icon">
-                        <CheckCircleIcon />
-                      </div>
-                      <h2 className="login-empty-title">You're signed in</h2>
-                      <p className="login-empty-desc">Redirecting to your dashboard…</p>
-                    </div>
-                  ) : (
-                    <form onSubmit={handleLogin} noValidate>
-                      <div className="login-title-group">
-                        <h2 className="login-title">Welcome back</h2>
-                        <p className="login-subtitle">Login to your Product Inc. account</p>
-                      </div>
-
-                      <div className="login-input-group">
-                        <input
-                          type="email"
-                          placeholder="name@company.com"
-                          className={`login-text-input ${loginFailed && !email ? 'input-error' : ''}`}
-                          value={email}
-                          onChange={(e) => {
-                            setEmail(e.target.value)
-                            setLoginFailed(false)
-                          }}
-                          autoComplete="email"
-                          required
-                        />
-                      </div>
-
-                      <div className="login-input-group">
-                        <input
-                          type="password"
-                          placeholder="Enter your password"
-                          className={`login-text-input ${loginFailed ? 'input-error' : ''}`}
-                          value={password}
-                          onChange={(e) => {
-                            setPassword(e.target.value)
-                            setLoginFailed(false)
-                          }}
-                          autoComplete="current-password"
-                          required
-                        />
-                        {loginFailed && (
-                          <>
-                            <span className="login-error-msg">
-                              {errorMessage || 'Incorrect password. Try again.'}
-                            </span>
-                            <div className="login-forgot-wrap">
-                              <Link to="#" className="login-forgot-link">
-                                Forgot your password?
-                              </Link>
-                            </div>
-                          </>
-                        )}
-                      </div>
-
-                      <button
-                        type="submit"
-                        className="login-submit-btn"
-                        disabled={isLoading}
-                      >
-                        {isLoading ? (
-                          <>
-                            <span
-                              className="cf-spinner"
-                              style={{ width: '16px', height: '16px', borderWidth: '2px', borderTopColor: '#ffffff' }}
-                            />
-                            <span>Signing in...</span>
-                          </>
-                        ) : (
-                          'Login'
-                        )}
-                      </button>
-
-                    </form>
-                  )}
-                </div>
-
-                {!isSuccess && (
-                  <div className="login-footer-text">
-                    Don't have an account?{' '}
-                    <Link to="/register" className="login-footer-link">
-                      Sign up
-                    </Link>
-                  </div>
-                )}
-              </div>
-
-              {/* Cover Image Side */}
-              <div className="login-split-image">
-                <div className="login-split-image-inner">
-                  <img
-                    style={coverImage}
-                    src={COVER_IMAGE_URL}
-                    alt="Two people working at a desk"
-                  />
-                </div>
-              </div>
-            </div>
+    <div
+      style={{
+        minHeight: '100vh',
+        backgroundColor: '#f5f5f7',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '32px 16px',
+      }}
+    >
+      <div style={{ width: '100%', maxWidth: '440px' }}>
+        {/* Apple-style App Icon */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+          <div
+            style={{
+              width: '68px',
+              height: '68px',
+              borderRadius: '18px',
+              background: 'linear-gradient(145deg, #0071e3 0%, #005bb5 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 8px 24px -4px rgba(0, 113, 227, 0.35), 0 2px 6px rgba(0, 0, 0, 0.04)',
+              border: '1px solid rgba(255, 255, 255, 0.25)',
+            }}
+          >
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <rect width="7" height="7" x="3" y="3" rx="1.5" />
+              <rect width="7" height="7" x="14" y="3" rx="1.5" />
+              <rect width="7" height="7" x="14" y="14" rx="1.5" />
+              <rect width="7" height="7" x="3" y="14" rx="1.5" />
+            </svg>
           </div>
         </div>
 
-        <div className="login-terms-text">
-          By clicking continue, you agree to our{' '}
-          <Link to="#" className="login-terms-link">
+        {/* Apple Segmented Controller Switcher */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.05)',
+            padding: '3px',
+            borderRadius: '12px',
+            marginBottom: '24px',
+            maxWidth: '280px',
+            marginInline: 'auto',
+          }}
+        >
+          <div
+            style={{
+              flex: 1,
+              textAlign: 'center',
+              padding: '6px 14px',
+              borderRadius: '9px',
+              backgroundColor: '#ffffff',
+              color: '#1d1d1f',
+              fontSize: '13px',
+              fontWeight: 600,
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08)',
+              cursor: 'default',
+            }}
+          >
+            Sign In
+          </div>
+          <Link
+            to="/register"
+            style={{
+              flex: 1,
+              textAlign: 'center',
+              padding: '6px 14px',
+              borderRadius: '9px',
+              color: '#6e6e73',
+              fontSize: '13px',
+              fontWeight: 500,
+              textDecoration: 'none',
+              transition: 'color 140ms ease',
+            }}
+          >
+            Sign Up
+          </Link>
+        </div>
+
+        {/* Card Container */}
+        <div
+          className="apple-card"
+          style={{
+            padding: '32px 30px',
+            borderRadius: '22px',
+            border: '1px solid rgba(0, 0, 0, 0.08)',
+            boxShadow: '0 12px 36px -4px rgba(0, 0, 0, 0.07), 0 2px 8px rgba(0, 0, 0, 0.02)',
+            backgroundColor: 'rgba(255, 255, 255, 0.92)',
+            backdropFilter: 'blur(20px)',
+          }}
+        >
+          {isSuccess ? (
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textAlign: 'center',
+                padding: '24px 0',
+                gap: '12px',
+              }}
+            >
+              <div
+                style={{
+                  width: '54px',
+                  height: '54px',
+                  borderRadius: '50%',
+                  backgroundColor: 'rgba(52, 199, 89, 0.14)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#34c759',
+                }}
+              >
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 6 9 17l-5-5" />
+                </svg>
+              </div>
+              <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#1d1d1f', letterSpacing: '-0.02em' }}>
+                Signed In
+              </h2>
+              <p style={{ fontSize: '13px', color: '#86868b' }}>
+                Opening your dashboard…
+              </p>
+            </div>
+          ) : (
+            <form onSubmit={handleLogin} noValidate>
+              <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+                <h1
+                  style={{
+                    fontSize: '22px',
+                    fontWeight: 700,
+                    color: '#1d1d1f',
+                    letterSpacing: '-0.025em',
+                    lineHeight: 1.25,
+                    marginBottom: '6px',
+                  }}
+                >
+                  Sign in with your account
+                </h1>
+                <p style={{ fontSize: '13.5px', color: '#86868b' }}>
+                  Enter your credentials to continue to Product Inc.
+                </p>
+              </div>
+
+              {loginFailed && errorMessage && (
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    backgroundColor: 'rgba(255, 59, 48, 0.08)',
+                    border: '1px solid rgba(255, 59, 48, 0.22)',
+                    color: '#d70015',
+                    padding: '10px 14px',
+                    borderRadius: '12px',
+                    fontSize: '13px',
+                    fontWeight: 500,
+                    marginBottom: '18px',
+                  }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                  </svg>
+                  <span>{errorMessage}</span>
+                </div>
+              )}
+
+              <div className="apple-input-group">
+                <label className="apple-label" htmlFor="login-email">
+                  Email Address
+                </label>
+                <input
+                  id="login-email"
+                  type="email"
+                  placeholder="name@example.com"
+                  className={`apple-input ${loginFailed && !email ? 'has-error' : ''}`}
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value)
+                    setLoginFailed(false)
+                  }}
+                  autoComplete="email"
+                  required
+                />
+              </div>
+
+              <div className="apple-input-group">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label className="apple-label" htmlFor="login-password">
+                    Password
+                  </label>
+                  <Link
+                    to="#"
+                    style={{
+                      fontSize: '12px',
+                      color: '#0071e3',
+                      textDecoration: 'none',
+                      fontWeight: 500,
+                    }}
+                  >
+                    Forgot?
+                  </Link>
+                </div>
+                <input
+                  id="login-password"
+                  type="password"
+                  placeholder="••••••••••••"
+                  className={`apple-input ${loginFailed ? 'has-error' : ''}`}
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value)
+                    setLoginFailed(false)
+                  }}
+                  autoComplete="current-password"
+                  required
+                />
+              </div>
+
+              <div style={{ marginTop: '22px' }}>
+                <button
+                  type="submit"
+                  className="apple-btn-primary"
+                  disabled={isLoading}
+                  style={{ width: '100%', height: '44px' }}
+                >
+                  {isLoading ? (
+                    <>
+                      <span
+                        className="cf-spinner"
+                        style={{
+                          width: '18px',
+                          height: '18px',
+                          borderWidth: '2px',
+                          borderColor: 'rgba(255, 255, 255, 0.3)',
+                          borderTopColor: '#ffffff',
+                        }}
+                      />
+                      <span>Signing in…</span>
+                    </>
+                  ) : (
+                    'Continue'
+                  )}
+                </button>
+              </div>
+
+              <div
+                style={{
+                  textAlign: 'center',
+                  marginTop: '20px',
+                  paddingTop: '18px',
+                  borderTop: '1px solid rgba(0, 0, 0, 0.05)',
+                  fontSize: '13px',
+                  color: '#86868b',
+                }}
+              >
+                Don't have an account?{' '}
+                <Link
+                  to="/register"
+                  style={{
+                    color: '#0071e3',
+                    fontWeight: 600,
+                    textDecoration: 'none',
+                  }}
+                >
+                  Create one now
+                </Link>
+              </div>
+            </form>
+          )}
+        </div>
+
+        {/* Apple Minimal Legal Footer */}
+        <div
+          style={{
+            marginTop: '24px',
+            textAlign: 'center',
+            fontSize: '11px',
+            color: '#86868b',
+            lineHeight: 1.6,
+          }}
+        >
+          By continuing, you agree to Product Inc.’s{' '}
+          <Link to="#" style={{ color: '#6e6e73', textDecoration: 'underline' }}>
             Terms of Service
           </Link>{' '}
           and{' '}
-          <Link to="#" className="login-terms-link">
+          <Link to="#" style={{ color: '#6e6e73', textDecoration: 'underline' }}>
             Privacy Policy
           </Link>
           .

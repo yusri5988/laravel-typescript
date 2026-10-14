@@ -1,4 +1,5 @@
 import app from '@/app/app'
+export { RateLimiter } from '@/app/DurableObjects/RateLimiter'
 
 /**
  * Worker entrypoint — Cloudflare Workers default export.

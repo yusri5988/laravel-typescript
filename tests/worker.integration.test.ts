@@ -2,6 +2,7 @@ import { exports, env } from 'cloudflare:workers'
 import { beforeAll, describe, expect, it } from 'vitest'
 
 const passwordHash = 'pbkdf2$120000$ZGVtby1zYWx0LTE2$mQbiV_eW3dNqYlkuF-SaN6KC1nymWA3tUzZh64DMTyc'
+let loginClientIp = 1
 
 beforeAll(async () => {
   await env.DB.prepare(
@@ -20,7 +21,10 @@ beforeAll(async () => {
 async function login(email: string): Promise<string> {
   const response = await exports.default.fetch('http://worker.test/api/auth/login', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'CF-Connecting-IP': `198.51.100.${loginClientIp++}`,
+    },
     body: JSON.stringify({ email, password: 'password123' }),
   })
 
@@ -33,7 +37,7 @@ function bearer(token: string): HeadersInit {
   return { Authorization: `Bearer ${token}` }
 }
 
-describe.sequential('Worker integration', () => {
+describe('Worker integration', () => {
   it('denies user management to unauthenticated requests', async () => {
     const response = await exports.default.fetch('http://worker.test/api/users')
 
@@ -72,6 +76,7 @@ describe.sequential('Worker integration', () => {
         name: 'Registered User',
         email: 'registered@example.com',
         password: 'password123',
+        role: 'admin',
       }),
     })
 
@@ -148,5 +153,59 @@ describe.sequential('Worker integration', () => {
       headers: bearer(token),
     })
     expect(me.status).toBe(401)
+  })
+
+  it('rate limits repeated login attempts from one client address', async () => {
+    const clientIp = '198.51.100.41'
+    const sendLogin = () => exports.default.fetch('http://worker.test/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'CF-Connecting-IP': clientIp,
+      },
+      body: JSON.stringify({ email: 'missing@example.com', password: 'wrong-password' }),
+    })
+
+    for (let attempt = 0; attempt < 10; attempt++) {
+      expect((await sendLogin()).status).toBe(401)
+    }
+
+    const limited = await sendLogin()
+    expect(limited.status).toBe(429)
+    expect(Number(limited.headers.get('Retry-After'))).toBeGreaterThan(0)
+  })
+
+  it('rate limits public registrations from one client address', async () => {
+    const clientIp = '198.51.100.42'
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const response = await exports.default.fetch('http://worker.test/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'CF-Connecting-IP': clientIp,
+        },
+        body: JSON.stringify({
+          name: `Rate Limited ${attempt}`,
+          email: `rate-limited-${attempt}@example.com`,
+          password: 'password123',
+        }),
+      })
+      expect(response.status).toBe(201)
+    }
+
+    const limited = await exports.default.fetch('http://worker.test/api/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'CF-Connecting-IP': clientIp,
+      },
+      body: JSON.stringify({
+        name: 'Rate Limited 6',
+        email: 'rate-limited-6@example.com',
+        password: 'password123',
+      }),
+    })
+
+    expect(limited.status).toBe(429)
   })
 })

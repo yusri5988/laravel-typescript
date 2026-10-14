@@ -1,285 +1,353 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+/* ==========================================================================
+   Apple Design System - Web Translation
+   Based on Apple WWDC (Designing Fluid Interfaces & Principles of Great Design)
+   ========================================================================== */
 
 :root {
-  --cf-orange: #f38020;
-  --cf-orange-hover: #e56a0c;
-  --cf-orange-subtle: #fff7ed;
-  --cf-orange-border: #fdba74;
+  /* Apple System Palette */
+  --apple-blue: #0071e3;
+  --apple-blue-hover: #0077ed;
+  --apple-blue-subtle: rgba(0, 113, 227, 0.08);
+  --apple-blue-border: rgba(0, 113, 227, 0.25);
 
-  --cf-bg: #f8fafc;
+  --apple-bg: #f5f5f7;
+  --apple-bg-grouped: #ffffff;
+  --apple-card-bg: rgba(255, 255, 255, 0.86);
+  --apple-card-border: rgba(0, 0, 0, 0.07);
+
+  --apple-nav-bg: rgba(255, 255, 255, 0.8);
+  --apple-nav-border: rgba(0, 0, 0, 0.08);
+
+  --apple-sidebar-bg: rgba(246, 246, 248, 0.85);
+  --apple-sidebar-border: rgba(0, 0, 0, 0.07);
+
+  --apple-text-primary: #1d1d1f;
+  --apple-text-secondary: #6e6e73;
+  --apple-text-tertiary: #86868b;
+  --apple-text-quaternary: #aeaeb2;
+
+  --apple-border: rgba(0, 0, 0, 0.09);
+  --apple-border-light: rgba(0, 0, 0, 0.04);
+  --apple-border-focus: #0071e3;
+
+  --apple-green: #34c759;
+  --apple-green-bg: rgba(52, 199, 89, 0.12);
+  --apple-green-border: rgba(52, 199, 89, 0.25);
+
+  --apple-red: #ff3b30;
+  --apple-red-bg: rgba(255, 59, 48, 0.1);
+  --apple-red-border: rgba(255, 59, 48, 0.25);
+
+  --apple-orange: #ff9500;
+  --apple-purple: #af52de;
+  --apple-indigo: #5856d6;
+  --apple-teal: #30b0c7;
+
+  /* Elevation & Shadows (Diffuse, physical light) */
+  --apple-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --apple-shadow-sm: 0 2px 6px -1px rgba(0, 0, 0, 0.04), 0 1px 3px 0 rgba(0, 0, 0, 0.02);
+  --apple-shadow-md: 0 8px 24px -4px rgba(0, 0, 0, 0.06), 0 2px 8px -2px rgba(0, 0, 0, 0.03);
+  --apple-shadow-lg: 0 16px 40px -8px rgba(0, 0, 0, 0.08), 0 4px 16px -4px rgba(0, 0, 0, 0.04);
+
+  /* Apple Radii (Continuous Squircles) */
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-pill: 9999px;
+
+  /* Spring Physics Curves */
+  --spring-easing: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --spring-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --spring-duration: 280ms;
+
+  /* Backward Compatibility Aliases */
+  --cf-bg: var(--apple-bg);
   --cf-card-bg: #ffffff;
-  --cf-nav-bg: #1e1e24;
-  --cf-nav-text: #f4f5f7;
-  --cf-nav-border: #2e2e38;
-
-  --cf-sidebar-bg: #ffffff;
-  --cf-sidebar-border: #e2e8f0;
-
-  --cf-text-primary: #111827;
-  --cf-text-secondary: #4b5563;
-  --cf-text-muted: #6b7280;
-
-  --cf-border: #e2e8f0;
-  --cf-border-focus: #f38020;
-
-  --cf-success: #10b981;
-  --cf-success-bg: #ecfdf5;
-  --cf-success-border: #a7f3d0;
-
-  --cf-danger: #ef4444;
-  --cf-danger-bg: #fef2f2;
-  --cf-danger-border: #fecaca;
-
-  --cf-blue: #2563eb;
-  --cf-blue-bg: #eff6ff;
-
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
-
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
+  --cf-border: var(--apple-border);
+  --cf-border-focus: var(--apple-blue);
+  --cf-orange: var(--apple-blue);
+  --cf-orange-hover: var(--apple-blue-hover);
+  --cf-orange-subtle: var(--apple-blue-subtle);
+  --cf-text-primary: var(--apple-text-primary);
+  --cf-text-secondary: var(--apple-text-secondary);
+  --cf-text-muted: var(--apple-text-tertiary);
+  --cf-success: var(--apple-green);
+  --cf-success-bg: var(--apple-green-bg);
+  --cf-danger: var(--apple-red);
+  --cf-danger-bg: var(--apple-red-bg);
+  --cf-danger-border: var(--apple-red-border);
+  --cf-sidebar-bg: var(--apple-sidebar-bg);
+  --cf-sidebar-border: var(--apple-sidebar-border);
+  --radius-md: 12px;
+  --radius-lg: 16px;
 }
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
-
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-  background-color: var(--cf-bg);
-  color: var(--cf-text-primary);
-  font-size: 13.5px;
-  line-height: 1.5;
-  min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background-color: var(--apple-bg);
+  color: var(--apple-text-primary);
+  font-size: 14px;
+  line-height: 1.47;
+  letter-spacing: -0.01em;
+  min-height: 100vh;
+  selection-background-color: rgba(0, 113, 227, 0.2);
+}
+
 /* ==========================================================================
-   Auth Layout (Login & Register) - Cloudflare Style
+   Tactile & Spring Micro-Interactions (Apple Design Rule §1 & §4)
    ========================================================================== */
 
-.cf-auth-container {
-  min-height: 100vh;
+button,
+a,
+.apple-pressable {
+  transition: transform 120ms var(--spring-easing), opacity 120ms ease, background-color 150ms ease, box-shadow 150ms ease;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+button:active:not(:disabled),
+.apple-pressable:active {
+  transform: scale(0.975);
+}
+
+/* ==========================================================================
+   Translucent Materials & Depth (Apple Design Rule §12)
+   ========================================================================== */
+
+.apple-frosted-glass {
+  background: var(--apple-card-bg);
+  backdrop-filter: blur(25px) saturate(190%);
+  -webkit-backdrop-filter: blur(25px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  box-shadow: var(--apple-shadow-sm);
+}
+
+.apple-card {
+  background: #ffffff;
+  border: 1px solid var(--apple-card-border);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  box-shadow: var(--apple-shadow-sm);
+  transition: box-shadow 200ms ease, transform 200ms var(--spring-easing);
+}
+
+.apple-card-interactive:hover {
+  box-shadow: var(--apple-shadow-md);
+  transform: translateY(-1px);
+}
+
+.apple-card-interactive:active {
+  transform: scale(0.99);
+}
+
+/* ==========================================================================
+   Form Controls & Inputs (Apple Style)
+   ========================================================================== */
+
+.apple-input-group {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 24px 16px;
-  background-color: #f8fafc;
-}
-
-.cf-auth-brand {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 18px;
-  text-decoration: none;
-  color: var(--cf-text-primary);
-}
-
-.cf-auth-brand-logo {
-  color: var(--cf-orange);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.cf-auth-brand-title {
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: #111827;
-}
-
-.cf-auth-brand-badge {
-  font-size: 0.625rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  background: #f1f5f9;
-  color: #475569;
-  padding: 1px 5px;
-  border-radius: var(--radius-sm);
-  letter-spacing: 0.05em;
-}
-
-.cf-auth-card {
-  background: var(--cf-card-bg);
-  border: 1px solid var(--cf-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
-  width: 100%;
-  max-width: 400px;
-  padding: 28px 24px;
-}
-
-.cf-auth-header {
-  margin-bottom: 18px;
-}
-
-.cf-auth-header h1 {
-  font-size: 1.1875rem;
-  font-weight: 700;
-  color: #111827;
-  letter-spacing: -0.02em;
-  margin-bottom: 4px;
-}
-
-.cf-auth-header p {
-  font-size: 0.8125rem;
-  color: var(--cf-text-muted);
-  line-height: 1.4;
-}
-
-.cf-form-group {
+  gap: 6px;
   margin-bottom: 14px;
 }
 
-.cf-label {
-  display: block;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #374151;
-  margin-bottom: 4px;
-}
-
-.cf-input {
-  width: 100%;
-  padding: 8px 11px;
-  font-size: 0.8125rem;
-  font-family: inherit;
-  color: var(--cf-text-primary);
-  background-color: #ffffff;
-  border: 1px solid #d1d5db;
-  border-radius: var(--radius-md);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-
-.cf-input:hover {
-  border-color: #9ca3af;
-}
-
-.cf-input:focus {
-  outline: none;
-  border-color: var(--cf-orange);
-  box-shadow: 0 0 0 2px rgba(243, 128, 32, 0.15);
-}
-
-.cf-input.has-error {
-  border-color: var(--cf-danger);
-}
-
-.cf-input.has-error:focus {
-  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.15);
-}
-
-.cf-field-error {
-  display: block;
-  font-size: 0.6875rem;
-  color: var(--cf-danger);
-  margin-top: 3px;
+.apple-label {
+  font-size: 12px;
   font-weight: 500;
+  color: var(--apple-text-secondary);
+  letter-spacing: -0.01em;
 }
 
-.cf-btn-primary {
+.apple-input {
   width: 100%;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--apple-text-primary);
+  background-color: rgba(0, 0, 0, 0.025);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: all 180ms ease;
+}
+
+.apple-input::placeholder {
+  color: var(--apple-text-quaternary);
+}
+
+.apple-input:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+.apple-input:focus {
+  background-color: #ffffff;
+  border-color: var(--apple-blue);
+  box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.16);
+}
+
+.apple-input.has-error {
+  border-color: var(--apple-red);
+  background-color: #ffffff;
+}
+
+.apple-input.has-error:focus {
+  box-shadow: 0 0 0 4px rgba(255, 59, 48, 0.16);
+}
+
+.apple-error-text {
+  font-size: 12px;
+  color: var(--apple-red);
+  font-weight: 500;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 8px 14px;
-  background-color: var(--cf-orange);
+  gap: 4px;
+}
+
+/* Apple Buttons */
+.apple-btn-primary {
+  width: 100%;
+  padding: 12px 18px;
+  background-color: var(--apple-blue);
   color: #ffffff;
-  font-size: 0.8125rem;
+  font-size: 14px;
   font-weight: 600;
-  font-family: inherit;
-  border: 1px solid var(--cf-orange);
+  border: none;
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.05s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
-.cf-btn-primary:hover:not(:disabled) {
-  background-color: var(--cf-orange-hover);
-  border-color: var(--cf-orange-hover);
+.apple-btn-primary:hover:not(:disabled) {
+  background-color: var(--apple-blue-hover);
+  box-shadow: 0 2px 8px rgba(0, 113, 227, 0.25);
 }
 
-.cf-btn-primary:active:not(:disabled) {
-  transform: translateY(1px);
+.apple-btn-primary:active:not(:disabled) {
+  transform: scale(0.975);
 }
 
-.cf-btn-primary:disabled {
-  opacity: 0.65;
+.apple-btn-primary:disabled {
+  opacity: 0.55;
   cursor: not-allowed;
 }
 
-.cf-auth-footer {
-  margin-top: 18px;
-  padding-top: 16px;
-  border-top: 1px solid var(--cf-border);
-  text-align: center;
-  font-size: 0.75rem;
-  color: var(--cf-text-secondary);
-}
-
-.cf-link {
-  color: var(--cf-orange);
-  font-weight: 600;
-  text-decoration: none;
-  transition: color 0.15s ease;
-}
-
-.cf-link:hover {
-  color: var(--cf-orange-hover);
-  text-decoration: underline;
-}
-
-.cf-alert-error {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  background-color: var(--cf-danger-bg);
-  border: 1px solid var(--cf-danger-border);
-  color: #b91c1c;
-  padding: 10px 12px;
+.apple-btn-secondary {
+  padding: 8px 14px;
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--apple-text-primary);
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
   border-radius: var(--radius-md);
-  font-size: 0.75rem;
-  margin-bottom: 16px;
-  line-height: 1.4;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
-.cf-auth-meta {
-  margin-top: 18px;
-  text-align: center;
-  font-size: 0.6875rem;
-  color: var(--cf-text-muted);
+.apple-btn-secondary:hover:not(:disabled) {
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+.apple-btn-secondary:active:not(:disabled) {
+  transform: scale(0.975);
+}
+
+.apple-btn-danger {
+  padding: 8px 14px;
+  background-color: var(--apple-red);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.apple-btn-danger:hover:not(:disabled) {
+  background-color: #e02d23;
+  box-shadow: 0 2px 8px rgba(255, 59, 48, 0.25);
+}
+
+.apple-btn-danger:active:not(:disabled) {
+  transform: scale(0.975);
 }
 
 /* ==========================================================================
-   Dashboard Shell with Sidebar Layout - Cloudflare Console Style
+   Apple Badges & Pills
+   ========================================================================== */
+
+.apple-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.apple-badge-green {
+  background-color: var(--apple-green-bg);
+  color: #248a3d;
+  border: 1px solid var(--apple-green-border);
+}
+
+.apple-badge-blue {
+  background-color: var(--apple-blue-subtle);
+  color: var(--apple-blue);
+  border: 1px solid var(--apple-blue-border);
+}
+
+.apple-badge-gray {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--apple-text-secondary);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* ==========================================================================
+   Navigation & App Shell
    ========================================================================== */
 
 .cf-dashboard-layout {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #f8fafc;
+  background-color: var(--apple-bg);
 }
 
-/* Top Navbar - Clean Product Inc. Vibe */
 .cf-navbar {
-  background-color: #ffffff;
-  color: #0f172a;
-  border-bottom: 1px solid #e2e8f0;
-  height: 52px;
+  background-color: var(--apple-nav-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--apple-nav-border);
+  height: 54px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 18px;
+  padding: 0 20px;
   position: sticky;
   top: 0;
   z-index: 50;
@@ -291,30 +359,27 @@ body {
   gap: 12px;
 }
 
-/* Sidebar slide toggle button */
 .cf-sidebar-toggle-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 32px;
   height: 32px;
-  border-radius: var(--radius-md);
-  background: #ffffff;
-  color: #64748b;
-  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--apple-text-secondary);
+  border: none;
   cursor: pointer;
-  transition: all 0.15s ease;
-  flex-shrink: 0;
+  transition: all 150ms ease;
 }
 
 .cf-sidebar-toggle-btn:hover {
-  background-color: #f1f5f9;
-  color: #0f172a;
-  border-color: #cbd5e1;
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--apple-text-primary);
 }
 
 .cf-sidebar-toggle-btn:active {
-  transform: scale(0.95);
+  transform: scale(0.94);
 }
 
 .cf-navbar-brand {
@@ -322,23 +387,28 @@ body {
   align-items: center;
   gap: 8px;
   text-decoration: none;
-  color: #0f172a;
-  font-weight: 700;
-  font-size: 0.9375rem;
+  color: var(--apple-text-primary);
+  font-weight: 600;
+  font-size: 15px;
   letter-spacing: -0.02em;
 }
 
 .cf-brand-icon-wrap {
-  color: #f38020;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #0071e3, #42a5f5);
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 113, 227, 0.3);
 }
 
 .cf-brand-text {
-  color: #0f172a;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: -0.02em;
+  color: var(--apple-text-primary);
 }
 
 .cf-navbar-right {
@@ -354,94 +424,271 @@ body {
 }
 
 .cf-user-avatar {
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background: #f1f5f9;
-  color: #0f172a;
-  font-size: 0.75rem;
-  font-weight: 700;
+  background: linear-gradient(135deg, #e0e0e6, #c7c7cc);
+  color: #1d1d1f;
+  font-size: 13px;
+  font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #e2e8f0;
   text-decoration: none;
-  transition: all 0.15s ease;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: var(--apple-shadow-xs);
+  transition: all 150ms ease;
 }
 
 .cf-user-avatar:hover {
-  border-color: #f38020;
-  background-color: #fff7ed;
-  color: #f38020;
+  transform: scale(1.05);
+  box-shadow: var(--apple-shadow-sm);
+}
+
+.cf-user-avatar:active {
+  transform: scale(0.95);
 }
 
 .cf-btn-logout {
-  background: #ffffff;
-  color: #64748b;
-  border: 1px solid #e2e8f0;
-  border-radius: var(--radius-md);
-  padding: 5px 12px;
-  font-size: 0.75rem;
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--apple-text-secondary);
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 6px 14px;
+  font-size: 12px;
   font-weight: 500;
-  font-family: inherit;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 150ms ease;
 }
 
 .cf-btn-logout:hover {
-  background-color: #fef2f2;
-  color: #ef4444;
-  border-color: #fecaca;
+  background-color: var(--apple-red-bg);
+  color: var(--apple-red);
 }
 
-/* Dashboard Shell Body (Sidebar + Content) */
+.cf-btn-logout:active {
+  transform: scale(0.96);
+}
+
+/* Sidebar (macOS Finder / iPadOS style) */
 .cf-dashboard-shell {
   display: flex;
   flex: 1;
-  min-height: calc(100vh - 48px);
+  min-height: calc(100vh - 54px);
   position: relative;
   overflow-x: hidden;
 }
 
-/* Sidebar with smooth slide */
 .cf-sidebar {
-  width: 220px;
-  background-color: var(--cf-sidebar-bg);
-  border-right: 1px solid var(--cf-sidebar-border);
+  width: 230px;
+  background-color: var(--apple-sidebar-bg);
+  backdrop-filter: blur(25px) saturate(190%);
+  -webkit-backdrop-filter: blur(25px) saturate(190%);
+  border-right: 1px solid var(--apple-sidebar-border);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   flex-shrink: 0;
-  transition: margin-left 0.28s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+  transition: margin-left 260ms var(--spring-easing), opacity 200ms ease;
   overflow: hidden;
   white-space: nowrap;
 }
 
 .cf-sidebar.closed {
-  margin-left: -220px;
+  margin-left: -230px;
   opacity: 0;
   pointer-events: none;
 }
 
-.cf-sidebar-backdrop {
-  display: none;
+.cf-sidebar-section {
+  padding: 16px 12px;
+}
+
+.cf-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.cf-sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--apple-text-secondary);
+  text-decoration: none;
+  transition: all 140ms ease;
+  cursor: pointer;
+}
+
+.cf-sidebar-item:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+  color: var(--apple-text-primary);
+}
+
+.cf-sidebar-item:active {
+  transform: scale(0.98);
+}
+
+.cf-sidebar-item.active {
+  background-color: rgba(0, 113, 227, 0.12);
+  color: var(--apple-blue);
+  font-weight: 600;
+}
+
+.cf-sidebar-footer {
+  padding: 16px;
+  border-top: 1px solid var(--apple-sidebar-border);
+  font-size: 11px;
+  color: var(--apple-text-tertiary);
+  letter-spacing: -0.01em;
+}
+
+.cf-content-area {
+  flex: 1;
+  padding: 32px 36px;
+  background-color: var(--apple-bg);
+  overflow-y: auto;
+  min-width: 0;
 }
 
 @media (max-width: 768px) {
+  .cf-content-area {
+    padding: 20px 16px;
+  }
+}
+
+/* ==========================================================================
+   Page Headers & Inset Groups (Apple Settings & Dashboard)
+   ========================================================================== */
+
+.cf-page-header {
+  margin-bottom: 24px;
+}
+
+.cf-page-title-group h1 {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--apple-text-primary);
+  line-height: 1.2;
+}
+
+.cf-page-subtitle {
+  font-size: 13.5px;
+  color: var(--apple-text-secondary);
+  margin-top: 4px;
+  letter-spacing: -0.01em;
+}
+
+/* Inset Grouped Section (Apple Settings style) */
+.apple-inset-group {
+  background: #ffffff;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--apple-card-border);
+  box-shadow: var(--apple-shadow-xs);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.apple-inset-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--apple-border-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.apple-inset-row {
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--apple-border-light);
+}
+
+.apple-inset-row:last-child {
+  border-bottom: none;
+}
+
+/* Loading & Spinners */
+.cf-loading-state {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--apple-text-secondary);
+  font-size: 13px;
+  background-color: var(--apple-bg);
+}
+
+.cf-spinner {
+  width: 28px;
+  height: 28px;
+  border: 2.5px solid rgba(0, 0, 0, 0.08);
+  border-top-color: var(--apple-blue);
+  border-radius: 50%;
+  animation: apple-spin 0.75s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* ==========================================================================
+   Responsive & Mobile Adaptations (Apple HIG Standards)
+   ========================================================================== */
+
+.dashboard-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.profile-hero-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 24px 28px;
+  border-radius: var(--radius-xl);
+}
+
+.profile-submit-wrap {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+
+@media (max-width: 768px) {
+  .cf-navbar {
+    padding: 0 14px;
+    height: 52px;
+  }
+
+  .cf-dashboard-shell {
+    min-height: calc(100vh - 52px);
+  }
+
+  /* Responsive Drawer Sidebar on Mobile/Tablet */
   .cf-sidebar {
     position: fixed;
-    top: 48px;
+    top: 52px;
     left: 0;
     bottom: 0;
-    z-index: 40;
-    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.18);
-    margin-left: 0;
+    width: 270px;
+    max-width: 82vw;
+    z-index: 60;
+    margin-left: 0 !important;
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(25px) saturate(190%);
+    -webkit-backdrop-filter: blur(25px) saturate(190%);
+    box-shadow: 12px 0 36px rgba(0, 0, 0, 0.16);
     transform: translateX(0);
-    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+    transition: transform 280ms var(--spring-easing), opacity 200ms ease;
   }
 
   .cf-sidebar.closed {
-    margin-left: 0;
     transform: translateX(-100%);
     opacity: 0;
     pointer-events: none;
@@ -450,331 +697,83 @@ body {
   .cf-sidebar-backdrop {
     display: block;
     position: fixed;
-    inset: 48px 0 0 0;
-    background-color: rgba(0, 0, 0, 0.45);
-    backdrop-filter: blur(2px);
-    z-index: 35;
-    animation: cf-fade-in 0.2s ease;
+    inset: 52px 0 0 0;
+    background-color: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 55;
+    animation: apple-fade-in 200ms ease;
+  }
+
+  .cf-content-area {
+    padding: 20px 14px;
+  }
+
+  .apple-card {
+    padding: 20px 16px;
+    border-radius: var(--radius-lg);
+  }
+
+  .apple-inset-row {
+    padding: 12px 16px;
   }
 }
 
-@keyframes cf-fade-in {
+@media (max-width: 640px) {
+  /* Prevent iOS Safari auto-zoom on input focus */
+  .apple-input {
+    font-size: 16px;
+    padding: 12px 14px;
+  }
+
+  .cf-page-title-group h1 {
+    font-size: 22px;
+  }
+
+  .apple-btn-primary,
+  .apple-btn-secondary,
+  .apple-btn-danger {
+    min-height: 44px; /* Apple HIG 44pt touch target */
+  }
+
+  .dashboard-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-hero-card {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    padding: 20px 16px;
+    gap: 14px;
+  }
+
+  .profile-hero-card > div:last-child {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .profile-submit-wrap {
+    justify-content: stretch;
+  }
+
+  .profile-submit-wrap button {
+    width: 100% !important;
+  }
+
+  .apple-inset-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+@keyframes apple-fade-in {
   from {
     opacity: 0;
   }
   to {
     opacity: 1;
   }
-}
-
-.cf-sidebar-section {
-  padding: 12px 10px;
-}
-
-.cf-sidebar-label {
-  font-size: 0.625rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--cf-text-muted);
-  letter-spacing: 0.06em;
-  padding: 0 10px 6px 10px;
-}
-
-.cf-sidebar-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.cf-sidebar-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 10px;
-  border-radius: var(--radius-md);
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: var(--cf-text-secondary);
-  text-decoration: none;
-  transition: all 0.15s ease;
-  cursor: pointer;
-}
-
-.cf-sidebar-item:hover {
-  background-color: #f1f5f9;
-  color: var(--cf-text-primary);
-}
-
-.cf-sidebar-item.active {
-  background-color: var(--cf-orange-subtle);
-  color: var(--cf-orange);
-  font-weight: 600;
-}
-
-.cf-sidebar-item svg {
-  flex-shrink: 0;
-}
-
-.cf-sidebar-footer {
-  padding: 12px;
-  border-top: 1px solid var(--cf-sidebar-border);
-  font-size: 0.6875rem;
-  color: var(--cf-text-muted);
-}
-
-/* Main Dashboard Canvas */
-.cf-content-area {
-  flex: 1;
-  padding: 24px;
-  background-color: #f8fafc;
-  overflow-y: auto;
-  min-width: 0;
-}
-
-.cf-page-header {
-  margin-bottom: 18px;
-}
-
-.cf-page-title-group h1 {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #111827;
-  letter-spacing: -0.02em;
-}
-
-.cf-page-subtitle {
-  font-size: 0.8125rem;
-  color: var(--cf-text-muted);
-  margin-top: 2px;
-}
-
-/* Loading & Center Status */
-.cf-loading-state {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  color: var(--cf-text-secondary);
-  font-size: 0.8125rem;
-}
-
-.cf-spinner {
-  width: 26px;
-  height: 26px;
-  border: 2px solid #e2e8f0;
-  border-top-color: var(--cf-orange);
-  border-radius: 50%;
-  animation: cf-spin 0.8s linear infinite;
-}
-
-@keyframes cf-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* ==========================================================================
-   Profile Page & Modern Card Styles
-   ========================================================================== */
-
-.cf-profile-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  max-width: 680px;
-}
-
-.cf-card {
-  background-color: #ffffff;
-  border: 1px solid var(--cf-border);
-  border-radius: var(--radius-lg);
-  padding: 18px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
-}
-
-.cf-card-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  margin-bottom: 14px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.cf-card-header-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-md);
-  background-color: var(--cf-orange-subtle);
-  color: var(--cf-orange);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.cf-card-header-icon.danger {
-  background-color: var(--cf-danger-bg);
-  color: var(--cf-danger);
-}
-
-.cf-card-title {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: #1e293b;
-  margin-bottom: 1px;
-}
-
-.cf-card-title.text-danger {
-  color: #b91c1c;
-}
-
-.cf-card-desc {
-  font-size: 0.75rem;
-  color: var(--cf-text-secondary);
-  line-height: 1.35;
-}
-
-.cf-card-footer {
-  margin-top: 14px;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.cf-btn-fit {
-  width: auto;
-  padding: 6px 14px;
-}
-
-.cf-btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 6px 12px;
-  background-color: #ffffff;
-  color: var(--cf-text-secondary);
-  font-size: 0.8125rem;
-  font-weight: 500;
-  border: 1px solid var(--cf-border);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.cf-btn-secondary:hover {
-  background-color: #f8fafc;
-  color: var(--cf-text-primary);
-  border-color: #cbd5e1;
-}
-
-.cf-btn-danger {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 6px 12px;
-  background-color: var(--cf-danger);
-  color: #ffffff;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  border: 1px solid var(--cf-danger);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.cf-btn-danger:hover:not(:disabled) {
-  background-color: #dc2626;
-  border-color: #dc2626;
-}
-
-.cf-btn-danger:disabled {
-  opacity: 0.65;
-  cursor: not-allowed;
-}
-
-.cf-card-danger {
-  border-color: rgba(239, 68, 68, 0.25);
-  background: linear-gradient(to bottom, #ffffff, #fef2f2);
-}
-
-.cf-danger-body {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.cf-danger-warning {
-  font-size: 0.8125rem;
-  color: #7f1d1d;
-  line-height: 1.5;
-}
-
-.cf-delete-confirm-box {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 16px;
-  background-color: #ffffff;
-  border: 1px solid var(--cf-danger-border);
-  border-radius: var(--radius-md);
-}
-
-.cf-delete-action-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.cf-delete-action-row .cf-input {
-  flex: 1;
-  min-width: 200px;
-}
-
-.cf-profile-meta-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 16px 0;
-  flex-wrap: wrap;
-}
-
-.cf-badge-role {
-  display: inline-flex;
-  align-items: center;
-  padding: 3px 8px;
-  border-radius: 9999px;
-  background-color: #f1f5f9;
-  border: 1px solid #e2e8f0;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  color: #475569;
-  letter-spacing: 0.04em;
-}
-
-.cf-text-muted-sm {
-  font-size: 0.75rem;
-  color: var(--cf-text-muted);
-}
-
-.cf-alert-success {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background-color: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  color: #065f46;
-  padding: 12px 14px;
-  border-radius: var(--radius-md);
-  font-size: 0.8125rem;
-  margin-bottom: 20px;
-  line-height: 1.4;
-  font-weight: 500;
-}
-
-.cf-alert-success svg {
-  color: #10b981;
-  flex-shrink: 0;
 }

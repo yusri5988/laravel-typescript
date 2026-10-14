@@ -11,7 +11,10 @@ export async function notFound(c: Context<AppEnv>): Promise<Response> {
   const wantsJson = c.req.header('accept')?.includes('application/json')
 
   if (!isApi && !wantsJson) {
-    return c.env.ASSETS.fetch(new URL('/index.html', c.req.url))
+    const assetResponse = await c.env.ASSETS.fetch(new URL('/index.html', c.req.url))
+    // Wrangler's asset responses may have immutable headers. Clone into a new
+    // Response so outer security-header middleware can safely decorate it.
+    return new Response(assetResponse.body, assetResponse)
   }
 
   return c.json({ message: 'Not Found' }, 404)

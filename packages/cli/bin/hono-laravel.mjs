@@ -22,11 +22,21 @@ Options:
 
 function run(command, args, cwd, options = {}) {
   const executable = process.platform === 'win32' && command === 'npm' ? 'npm.cmd' : command
+  const env = { ...process.env }
+
+  // npm 12.0.2 can forward a user-level allow-scripts setting from npx as an
+  // environment override. A nested project install then rejects it as a CLI
+  // flag. Let child npm processes read the setting from the user's .npmrc.
+  for (const key of Object.keys(env)) {
+    if (key.toLowerCase() === 'npm_config_allow_scripts') delete env[key]
+  }
+
   const result = spawnSync(executable, args, {
     cwd,
     stdio: options.input === undefined ? 'inherit' : ['pipe', 'inherit', 'inherit'],
     shell: process.platform === 'win32',
     input: options.input,
+    env,
   })
 
   if (result.error) throw result.error
@@ -48,7 +58,7 @@ async function createLocalVars(targetDirectory) {
   } catch {
     await writeFile(
       varsPath,
-      `JWT_SECRET=${randomBytes(32).toString('hex')}\nCORS_ORIGIN=http://127.0.0.1:8787\n`,
+      `JWT_SECRET=${randomBytes(32).toString('hex')}\nCORS_ORIGINS=\n`,
       'utf8',
     )
     return true

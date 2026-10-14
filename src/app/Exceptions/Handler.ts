@@ -25,7 +25,8 @@ export function onError(err: Error, c: Context<AppEnv>): Response {
   }))
   return c.json(
     {
-      message: 'Internal Server Error',
+      message: 'Internal server error.',
+      requestId: c.get('requestId'),
     },
     500
   )

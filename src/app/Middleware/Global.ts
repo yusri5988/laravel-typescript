@@ -6,7 +6,7 @@ import type { AppEnv } from '@/app/Env'
  * Order matters — they run in registration order like onion layers.
  */
 export const requestId = createMiddleware<AppEnv>(async (c, next) => {
-  const id = c.req.header('X-Request-Id') ?? crypto.randomUUID()
+  const id = crypto.randomUUID()
   c.set('requestId', id)
   c.header('X-Request-Id', id)
   await next()

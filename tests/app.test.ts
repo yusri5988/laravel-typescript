@@ -26,7 +26,18 @@ const env: AppEnv['Bindings'] = {
   DB: createDb(),
   JWT_SECRET: 'test-secret',
   APP_NAME: 'hono-laravel',
-  CORS_ORIGIN: '*',
+  CORS_ORIGINS: 'https://app.example.test',
+  RATE_LIMITER: {
+    idFromName: (name: string) => name,
+    get: () => ({
+      consume: async () => ({
+        allowed: true,
+        current: 1,
+        remaining: 9,
+        retryAfterSeconds: 60,
+      }),
+    }),
+  } as unknown as AppEnv['Bindings']['RATE_LIMITER'],
   ASSETS: {
     fetch: async () => new Response('<div id="root"></div>', { status: 200 }),
   } as unknown as Fetcher,
@@ -51,6 +62,19 @@ describe('web routes', () => {
     expect(await res.text()).toContain('<div id="root"></div>')
   })
 
+  it('can add security headers to static responses with immutable headers', async () => {
+    const immutableAssetsEnv: AppEnv['Bindings'] = {
+      ...env,
+      ASSETS: {
+        fetch: async () => Response.redirect('https://assets.example.test/index.html'),
+      } as unknown as Fetcher,
+    }
+    const res = await app.request('http://localhost/profile', {}, immutableAssetsEnv)
+
+    expect(res.status).toBe(302)
+    expect(res.headers.get('X-Content-Type-Options')).toBe('nosniff')
+  })
+
   it('returns 404 JSON for unknown API routes', async () => {
     const res = await app.request('http://localhost/api/unknown', {}, env)
     expect(res.status).toBe(404)
@@ -59,6 +83,33 @@ describe('web routes', () => {
 })
 
 describe('api routes', () => {
+  it('allows CORS only for configured origins', async () => {
+    const allowed = await app.request('http://localhost/api/', {
+      headers: { Origin: 'https://app.example.test' },
+    }, env)
+    const denied = await app.request('http://localhost/api/', {
+      headers: { Origin: 'https://untrusted.example' },
+    }, env)
+    const unset = await app.request('http://localhost/api/', {
+      headers: { Origin: 'https://untrusted.example' },
+    }, { ...env, CORS_ORIGINS: '' })
+
+    expect(allowed.headers.get('Access-Control-Allow-Origin')).toBe('https://app.example.test')
+    expect(denied.headers.get('Access-Control-Allow-Origin')).toBeNull()
+    expect(unset.headers.get('Access-Control-Allow-Origin')).toBeNull()
+  })
+
+  it('sets security headers and replaces client-supplied request IDs', async () => {
+    const res = await app.request('http://localhost/health', {
+      headers: { 'X-Request-Id': 'attacker-controlled' },
+    }, env)
+
+    expect(res.headers.get('X-Content-Type-Options')).toBe('nosniff')
+    expect(res.headers.get('Content-Security-Policy')).toContain("frame-ancestors 'none'")
+    expect(res.headers.get('X-Request-Id')).not.toBe('attacker-controlled')
+    expect(res.headers.get('X-Request-Id')).toMatch(/^[a-f0-9-]{36}$/)
+  })
+
   it('protects the user collection from unauthenticated access', async () => {
     const res = await app.request('http://localhost/api/users', {}, env)
     expect(res.status).toBe(401)

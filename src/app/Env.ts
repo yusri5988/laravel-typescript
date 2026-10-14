@@ -1,5 +1,5 @@
 /** Worker bindings and required secrets generated from wrangler.jsonc. */
-export type Bindings = Env
+export type Bindings = Omit<Env, 'CORS_ORIGINS'> & { CORS_ORIGINS?: string }
 
 /**
  * Request-scoped variables set by middleware (auth, db).

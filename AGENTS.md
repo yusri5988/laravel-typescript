@@ -1480,6 +1480,41 @@ Avoid AI-generated UI patterns that create:
 
 Prefer a professional application UI.
 
+### Prohibited Vibe-Coded Clutter & Anti-Patterns (30 Reasons Your Site Looks Vibe-Coded)
+
+DO NOT use any of these 30 cliché AI/vibe-coded design patterns:
+
+1. **Harsh gradients** — no abrasive multi-stop neon or harsh linear/radial gradient overlays.
+2. **Lucide icons** — do not spam default Lucide icons indiscriminately on every single element.
+3. **Pure white background** — avoid stark uncalibrated `#ffffff` canvases without contrast, depth, or elevation.
+4. **Rainbow coloring** — do not mix disparate, incoherent accent hues without a deliberate brand hierarchy.
+5. **Drop shadows** — avoid harsh, heavy, ungrounded drop shadows; use diffuse ambient lighting or subtle borders.
+6. **3 feature cards in a row** — avoid cookie-cutter 3-column feature card landing page layouts.
+7. **Emojis** — do not use emojis as UI icons or structural heading decoration.
+8. **Liquid glass** — avoid gimmicky fluid/liquid glass effects that destroy contrast and legibility.
+9. **Em dashes** — avoid overusing em dashes (—) in marketing copy and headlines.
+10. **Inter/Geist/Space Grotesk** — avoid generic overused AI startup font stacks; prefer platform system fonts (`system-ui`, `-apple-system`, `SF Pro`).
+11. **Colored left stripe** — avoid 3px colored borders on the left side of cards/callouts.
+12. **Fake testimonials** — no fictional quote blocks, generated avatars, or filler social proof.
+13. **Bento grids** — avoid generic bento-box layouts that serve novelty rather than content hierarchy.
+14. **Terminal window** — do not display fake macOS terminal windows with red/yellow/green traffic light dots for non-CLI apps.
+15. **“It’s not X, it’s Y”** — avoid cliché marketing headline formulas.
+16. **Checkmark bullets** — avoid endless rows of green checkmark bullet points for basic features.
+17. **3 pricing tiers** — do not insert copy-pasted 3-tier pricing tables with a highlighted "Most Popular" card when irrelevant.
+18. **No real product demos** — do not substitute real, interactive functionality with vague abstract illustrations.
+19. **Soft corner radius** — avoid excessively bubbly, pill-blobed cards where precise architectural structure is needed.
+20. **Purple and black** — avoid cliché "AI dark mode" purple-and-black gradient palettes.
+21. **No skeleton loaders** — do not cause sudden layout shift; always provide smooth skeleton or deliberate loading states.
+22. **Radial orbs** — no floating blurry glowing radial balls/orbs in the background.
+23. **Dot grids** — no generic dot matrix or mesh canvas patterns.
+24. **Sparkle icons** — do not put AI sparkle / magic star icons (✨) across buttons and headers.
+25. **Animated arrows** — no bouncing or oscillating CTA arrows.
+26. **No TOS** — never omit actual Terms of Service links/provisions.
+27. **No privacy policy** — never omit actual Privacy Policy links/provisions.
+28. **Hover animations** — avoid gratuitous hover jumps, wobbles, and distracting micro-zooms.
+29. **Neon colors** — no abrasive high-saturation neon greens, cyans, or hot pinks.
+30. **Basic pastel colors** — avoid washed-out, low-contrast pastel backgrounds.
+
 ---
 
 ## 25. Logging Standard
@@ -1715,7 +1750,7 @@ End-to-end
 ### 29.1 Testing Cloudflare Resources
 
 - **D1**: jangan mock D1 bila behavior yang diuji bergantung pada SQL, constraints, timestamps, transaksi, atau Drizzle mapping — guna D1 integration test yang sebenar.
-- **Durable Objects**: gunakan Miniflare (`@cloudflare/vitest-pool-workers`) untuk mock/test DO behavior termasuk SQLite storage.
+- **Durable Objects**: gunakan Miniflare (`@cloudflare/vitest-plugin`) untuk mock/test DO behavior termasuk SQLite storage.
 - **Workers AI**: local development masih incur usage — rancang test AI pada gating/logic, bukan panggilan model sebenar.
 - **Queues**: test producer `send()` dan consumer `queue` handler secara berasingan.
 
@@ -3235,7 +3270,12 @@ AI agents MUST NOT:
 - create unnecessary abstractions;
 - refactor unrelated code;
 - change API response contracts without requirement;
-- replace working code merely because another style is preferred.
+- replace working code merely because another style is preferred;
+- probe live/deployed endpoints, remote databases, or production environments;
+- elevate missing best practices, style deviations, or guessed infrastructure into security vulnerabilities;
+- fabricate weaponized exploits or test denial-of-service against live systems;
+- modify application source code during security audit workflows without explicit review;
+- use vibe-coded UI clichés and prohibited patterns defined in Section 24.
 
 ---
 
@@ -3329,6 +3369,7 @@ Before first production release:
 [ ] Typecheck passes
 [ ] Tests pass
 [ ] Build passes
+[ ] Security audit & vulnerability review passed (Section 73)
 [ ] Git working tree clean
 ```
 
@@ -3383,10 +3424,169 @@ A feature is done when:
 12. No secrets are exposed.
 13. No unrelated regressions were introduced.
 14. Production deployment implications are understood.
+15. Security boundaries, input invariants, and authorization verified (Section 73).
 
 ---
 
-## 73. Final Architecture Summary
+## 73. Security Audit & Vulnerability Review SOP
+
+Setiap semakan keselamatan, penilaian kerentanan (*vulnerability review*), ujian penembusan (*pen-test*), atau audit kod sumber MESTI mematuhi SOP ini secara ketat. Standard ini berteraskan pendekatan defensif, berasaskan kod sumber (*source-first*), dan bersandarkan bukti empirikal tempatan yang terhad (*bounded local evidence*). Tiada penemuan boleh dianggap sah tanpa bukti konkrit pelanggaran sempadan amanah (*trust boundary*) yang nyata.
+
+### 73.1 Core Principles (Prinsip Teras Keselamatan)
+
+1. **Require a Boundary and Result (Wajib Ada Sempadan Amanah & Hasil Nyata)**:
+   - Setiap calon kerentanan (*candidate*) MESTI mengenal pasti:
+     - **Lower-trust principal**: Pelaku/pengguna berkuasa rendah atau tanpa pengesahan.
+     - **Accepted input/action**: Input atau tindakan yang diterima oleh sistem.
+     - **Intended control**: Kawalan keselamatan asal (cth: auth middleware, Zod schema, tenant check).
+     - **Crossed boundary**: Sempadan amanah (*trust boundary*) yang berjaya ditembusi.
+     - **Affected principal/resource**: Pengguna, data penyewa (*tenant data*), atau sumber yang terjejas.
+     - **Concrete observed result**: Hasil pemerhatian konkrit yang boleh dibuktikan secara empirikal.
+   - **JANGAN** anggap pelanggaran senarai semak (*checklist deviation*), ketiadaan amalan terbaik (*missing best practice*), andaian tingkah laku infrastruktur, generic parser crash, atau *self-impact* (tindakan yang hanya menjejaskan akaun/sesi pelaku sendiri) sebagai kerentanan keselamatan.
+
+2. **Bounded Local Evidence (Bukti Tempatan yang Terhad)**:
+   - Analisis statik digunakan untuk mengesan laluan kod sumber (*source path*).
+   - Ujian tingkah laku dijalankan HANYA dalam persekitaran tempatan berpasir (*sandboxed local tests*): unit test Vitest, minimal function harness, mock fixture, atau dummy-tenant integration test.
+   - Hentikan ujian pada kesan minimum yang membuktikan kecacatan (cth: nilai pulangan tidak sah, akses rekod dummy tanpa izin, perbezaan polisi).
+   - **DILARANG** menghasilkan skrip eksploitasi berterusan (*persistence*), aktiviti selepas pecah masuk (*post-exploitation*), atau teknik penyembunyian (*concealment*).
+
+3. **Respect Source Visibility (Hormati Had Penglihatan Kod Sumber)**:
+   - Kawalan penggunaan, proksi Cloudflare, tetapan WAF dashboard, browser headers, polisi identiti broker, dan topologi rangkaian adalah kawalan sebenar.
+   - Jika konfigurasi tersebut tiada dalam repositori kod, JANGAN buat andaian bahawa ia wujud atau tidak wujud.
+   - Laporkan jurang tersebut sebagai `needs_validation` berserta fakta tepat yang hilang dan pelan pengesahan pemilik (*owner-observed plan*).
+
+4. **Separate Priority from Certainty (Asingkan Keterukan daripada Kepastian)**:
+   - Tahap keterukan (*severity*) HANYA diberikan kepada rekod yang berstatus `confirmed` (terbukti sepenuhnya).
+   - Status `needs_validation` bermaksud hipotesis sempadan yang berasaskan sumber terhalang oleh ketiadaan bukti persekitaran — ia **TIDAK BOLEH** diberikan sebarang skor severity.
+
+5. **Recommend the Smallest Effective Source Fix (Cadangkan Pembaikan Sumber Terkecil)**:
+   - Kenal pasti *invariant* yang wajib dikuatkuasakan dalam kod.
+   - Cadangkan perubahan kod sumber paling minimum di titik keputusan paling dipercayai (*last trusted decision point*).
+   - Sertakan cadangan ujian regresi (*regression test*).
+   - Audit keselamatan hanya mendokumentasikan pembaikan; ia **TIDAK MENGUBAH** kod sumber sasaran secara terus tanpa arahan eksplisit.
+
+---
+
+### 73.2 Severity Calibration Anchors (Skala Keterukan)
+
+Keterukan dikalibrasi berdasarkan kesan sebenar yang dibuktikan, bukan sangkaan senario terburuk:
+
+| Level | Kriteria & Takrifan | Contoh Dalam Stack Hono + D1 |
+|-------|---------------------|------------------------------|
+| **Critical** | Pelaku tanpa pengesahan (*unauthenticated*) mendapat pelaksanaan kod sewenang-wenang (RCE), akses penuh storan data D1/KV/R2, atau pengambilalihan akaun sebarangan (*arbitrary account takeover*). | Auth bypass menyeluruh yang membolehkan sebarang data D1 diakses/ditulis tanpa token, atau RCE dalam Worker runtime. |
+| **High** | Pelaku memintas kawalan keselamatan eksplisit secara menyeluruh dengan akibat nyata (*direct business impact*). | IDOR/BOLA yang membenarkan pengguna membaca/mengubah rekod penyewa lain (*cross-tenant read/write*), stored XSS yang menyerang pengguna lain, atau remote stop/DoS bagi Worker/D1 tanpa token. |
+| **Medium** | Pelanggaran sempadan amanah sebenar tetapi mempunyai *blast radius* terhad, memerlukan prasyarat yang sukar, atau terhad kepada sumber yang tidak kritikal. | Weak authorization pada sub-rekod berisiko rendah, kebocoran data terhad tanpa eskalasi kuasa (*privilege escalation*), atau manipulasi state tempatan. |
+| **Low** | Pendedahan maklumat dalaman bukan rahsia (*non-secret internals*), atau impak minimum yang memerlukan usaha berterusan tidak praktikal. | Stack trace pendedahan nama library dalaman (bukan credential), pendedahan versi perisian tanpa eksploitasi langsung. |
+| **Informational** | Pemerhatian sah atau cadangan pertahanan berlapis (*defense-in-depth*) tanpa pelanggaran sempadan amanah yang boleh dicapai. | Cadangan menambah header keselamatan tambahan atau penambahbaikan penulisan skema Zod. |
+
+> **Diskriminator High vs Medium**: Adakah hasil yang dibuktikan memintas kawalan keselamatan eksplisit secara menyeluruh untuk tindakan berimpak nyata, atau hanya sekadar melemahkannya? Jika kerosakan konkrit tidak dapat ditunjukkan, tahap keterukan adalah lebih rendah daripada sangkaan awal.
+
+---
+
+### 73.3 Universal Execution Safety & Ethical Boundaries (Had Keselamatan Pelaksanaan)
+
+Peraturan keselamatan sejagat yang WAJIB dipatuhi dalam setiap penilaian keselamatan:
+
+1. **Pemeriksaan Sumber Adalah Baca-Sahaja (*Read-Only*)**:
+   - Analisis kod tidak mengubah suai fail projek.
+2. **Persekitaran Sandbox Tempatan**:
+   - Jalankan proses ujian hanya secara tempatan menggunakan loopback terasing (contohnya `127.0.0.1` / Vitest mock).
+   - Persekitaran kosong (*empty environment*) dengan allowlist pembolehubah yang selamat. JANGAN sekali-kali mendedahkan token host, API key sebenar, atau credentials sistem kepada proses sasaran.
+3. **Data & Identiti Dummy Sahaja**:
+   - Gunakan pengguna olok-olok (*dummy principals*), mock token JWT, dan fixture palsu.
+4. **LARANGAN KERAS Ujian Luaran & Pengeluaran**:
+   - **DILARANG SAMA SEKALI** menghantar probe, fuzzing, atau payload penembusan terhadap endpoint Cloudflare Worker yang sudah dideploy.
+   - **DILARANG** menyentuh pangkalan data D1 remote (`--remote`), namespace KV production, atau bucket R2 sebenar.
+   - **DILARANG** menguji akaun pengguna sebenar atau infrastruktur kongsi Cloudflare.
+   - **DILARANG** menguji ketersediaan (*availability/DoS testing*) terhadap sebarang proses hidup.
+   - **DILARANG** membelanjakan kuota API berbayar (cth: Workers AI remote calls berbayar) tanpa kebenaran bertulis.
+   - Berhenti sebaik sahaja kesan minimum yang membuktikan kecacatan dapat ditunjukkan.
+
+---
+
+### 73.4 Audit Operating Modes (Mod Operasi)
+
+Terdapat dua mod operasi audit keselamatan:
+
+1. **Guidance Mode (Mod Panduan - Default)**:
+   - Digunakan untuk soalan keselamatan harian, semakan kod PR, pemodelan ancaman (*threat modeling*) pada fitur baharu, semakan middleware/skema Zod, atau siasatan isu tertentu.
+   - Hanya gunakan bahagian relevan; **JANGAN** jalankan 6 fasa penuh secara automatik atau mencipta fail laporan besar melainkan diminta secara jelas.
+
+2. **Full Audit Mode (Mod Audit Penuh)**:
+   - Digunakan HANYA apabila pengguna secara eksplisit meminta audit menyeluruh (*full codebase audit*), pen-test, semakan hujung-ke-hujung (*end-to-end security review*), atau penghasilan artifak laporan audit rasmi.
+   - Menjalankan 6 fasa audit penuh secara sistematik.
+
+---
+
+### 73.5 The 6-Phase Full Audit Workflow
+
+Sekiranya audit penuh dijalankan, laksanakan 6 fasa ini mengikut urutan:
+
+```text
+Phase 1: Reconnaissance
+   ↓
+Phase 2: Coverage-Led Hunting Waves
+   ↓
+Phase 3: Candidate Validation
+   ↓
+Phase 4: Structured Output (findings.json)
+   ↓
+Phase 5: Independent Record Verification
+   ↓
+Phase 6: Target-Neutral Report (REPORT.md)
+```
+
+1. **Phase 1: Reconnaissance (Peninjauan)**:
+   - Petakan *attack surface*, sempadan amanah (*trust boundaries*), dan semua titik masuk (Routes, Middleware, Public Assets).
+   - Kenal pasti Cloudflare bindings yang aktif (`DB`, `KV`, `BUCKET`, `AI`, `MY_QUEUE`, `MY_DURABLE_OBJECT`).
+   - Sediakan *deterministic coverage ledger* bagi memastikan semua modul disemak secara sistematik.
+
+2. **Phase 2: Coverage-Led Hunting Waves (Penyelidikan Serangan Berfokus)**:
+   - Selidiki kelas serangan kritikal khusus bagi stack Hono + Cloudflare:
+     - **Authentication & Token Flaws**: Pengesahan tandatangan JWT, pengendalian secret `JWT_SECRET`, tamat tempoh token (*expiration*), pembatalan token (*revocation*).
+     - **Authorization & Access Control**: IDOR/BOLA pada controllers & services, missing tenant isolation pada D1 queries, manipulasi parameter ID.
+     - **Injection & Query Safety**: Penggunaan D1 `prepare()` + `bind()`, pastikan tiada konkatenasi string SQL mentah atau interpolasi nilai pengguna.
+     - **Request Validation Gaps**: Endpoint tanpa Zod validator, type bypass, atau parameter tampering.
+     - **Data Exposure & Leakage**: Kebocoran password hash, secret keys, atau internal errors dalam controller response.
+     - **State & Storage Desynchronization**: Race conditions pada Durable Objects atau KV stale reads.
+     - **CORS & Header Misconfigurations**: Wildcard CORS pada endpoint sensitif, ketiadaan CSP headers.
+
+3. **Phase 3: Candidate Validation (Pengesahan Calon Dapatan)**:
+   - Setiap dapatan awal MESTI disahkan secara bebas dengan mengesan laluan kod sumber sebenar dan ujian tempatan terkawal.
+   - Asingkan fakta yang terbukti daripada andaian. Jika bergantung pada tingkah laku persekitaran yang tidak jelas, tanda sebagai `needs_validation`.
+
+4. **Phase 4: Structured Output (Penyusunan Output Berstruktur)**:
+   - Catatkan semua rekod akhir ke dalam format berstruktur:
+     - `confirmed` — terbukti dengan bukti kod sumber / ujian tempatan berpasir.
+     - `needs_validation` — hipotesis berasas tetapi terhalang oleh ketiadaan bukti persekitaran repo.
+     - `rejected` — hipotesis yang dibuktikan tidak sah atau terlindung oleh kawalan lain.
+
+5. **Phase 5: Independent Record Verification (Semakan Semula Bebas)**:
+   - Semak semula setiap rekod terhadap versi kod terkini untuk mengelakkan *false positives* atau maklumat lapuk sebelum laporan akhir dijana.
+
+6. **Phase 6: Target-Neutral Report (Laporan Remediate)**:
+   - Janakan laporan defensif (`REPORT.md`, `FINDINGS-DETAIL.md`, `NEEDS-VALIDATION.md`).
+   - Laporan MESTI berorientasikan pembetulan (remediation) untuk pemilik kod dengan cadangan pembaikan kod sumber terkecil.
+   - **JANGAN** sertakan arahan atau skrip *weaponized exploit* yang memudahkan serangan berniat jahat.
+
+---
+
+### 73.6 Security Anti-Patterns (Apa Yang DILARANG)
+
+1. **Checklist Fallacy**: Mempersembahkan perbezaan checklist am sebagai kerentanan keselamatan tanpa membuktikan wujudnya pelanggaran sempadan amanah sebenar.
+2. **Hypothetical Defense-in-Depth**: Menuntut pembetulan kecemasan untuk isu "defense-in-depth" yang tiada laluan eksploitasi boleh dicapai (*no reachable path*).
+3. **Live/Remote Probing**: Melakukan penembusan atau serangan aktif ke atas production Worker atau endpoint awam.
+4. **Environment Guessing**: Meneka tingkah laku Cloudflare edge, proxy WAF, atau browser header yang tidak ditakrifkan dalam kod sumber.
+5. **Self-Impact False Positives**: Melaporkan tindakan pengguna yang hanya menjejaskan data/sesi sendiri sebagai kerentanan sistem.
+6. **Exaggerated Severity**: Melaporkan error log atau crash biasa sebagai "Remote Code Execution" atau "Critical DoS".
+7. **Severity on Unvalidated**: Memberikan skor keterukan (cth: High/Critical) kepada rekod yang masih bertaraf `needs_validation`.
+8. **Prose-Only Handwaving**: Mengeluarkan dapatan umum tanpa rujukan fail, baris kod, dan bukti aliran data yang tepat.
+9. **Source Mutation During Audit**: Mengubah atau menampal kod aplikasi secara senyap semasa fasa audit sedang berlangsung tanpa semakan berasingan.
+10. **Exploit Weaponization**: Menyediakan skrip eksploitasi bersedia-guna berbanding fokus kepada tampalan pembaikan (*patch/fix*).
+
+---
+
+## 74. Final Architecture Summary
 
 Backend:
 

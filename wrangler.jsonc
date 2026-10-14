@@ -8,7 +8,7 @@
     "enabled": true
   },
   "assets": {
-    "directory": "./src/dist",
+    "directory": "./dist",
     "binding": "ASSETS",
     "not_found_handling": "single-page-application"
   },
@@ -22,9 +22,17 @@
   ],
   "vars": {
     "APP_NAME": "hono-laravel",
-    "CORS_ORIGIN": "http://127.0.0.1:8787"
+    "CORS_ORIGINS": ""
   },
   "secrets": {
     "required": ["JWT_SECRET"]
-  }
+  },
+  "durable_objects": {
+    "bindings": [
+      { "name": "RATE_LIMITER", "class_name": "RateLimiter" }
+    ]
+  },
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["RateLimiter"] }
+  ]
 }
