@@ -33,6 +33,7 @@ function shouldCopy(sourcePath) {
   if (normalizedPath === 'package-lock.json') return false
   if (normalizedPath === 'scripts/build-cli-template.mjs') return false
   if (fileName === '.dev.vars') return false
+  if (normalizedPath === 'worker.txt') return false
   if (fileName?.startsWith('.env.') && fileName !== '.env.example') return false
   if (fileName === '.env') return false
 
